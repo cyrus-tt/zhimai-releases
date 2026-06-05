@@ -5,10 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>知脉 ZhiMai — 你的私人研究院</title>
   <meta name="description" content="把你每天刷到的信息（YouTube / 网页 / PDF / Telegram / RSS）一键纳入，AI 自动读完、归档、连上你已有的知识，还能按主题写出带出处的研究报告。全程在你自己的电脑上，数据不出门。">
-  <meta name="theme-color" content="#FCFBF8">
+
+  <link rel="canonical" href="https://zhimai.cyrustyj.xyz/">
+
+  <!-- ── Theme / mobile chrome ── -->
+  <meta name="theme-color" content="#FCFBF8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1A1714" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="知脉 ZhiMai">
+  <meta name="application-name" content="知脉 ZhiMai">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- ── Open Graph ── -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="知脉 ZhiMai">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:url" content="https://zhimai.cyrustyj.xyz/">
   <meta property="og:title" content="知脉 ZhiMai — 你的私人研究院">
-  <meta property="og:description" content="采集 → 自动分析 → 自动建库 → 一键深度研究报告。数据全在本地。">
-  <link rel="icon" href="/favicon.svg">
+  <meta property="og:description" content="粘贴链接或丢个 PDF，AI 自动读完、建库，按主题写出带出处的研究报告。全程在你自己的电脑上，数据不出门。">
+  <meta property="og:image" content="https://zhimai.cyrustyj.xyz/og.png">
+  <meta property="og:image:secure_url" content="https://zhimai.cyrustyj.xyz/og.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="知脉 ZhiMai — 本地运行的私人研究院，AI 自动采集、建库、写带出处的研究报告">
+
+  <!-- ── Twitter / X Card ── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="知脉 ZhiMai — 你的私人研究院">
+  <meta name="twitter:description" content="粘贴链接或丢个 PDF，AI 自动读完、建库，按主题写出带出处的研究报告。数据全在本地。">
+  <meta name="twitter:image" content="https://zhimai.cyrustyj.xyz/og.png">
+  <meta name="twitter:image:alt" content="知脉 ZhiMai — 本地运行的私人研究院">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -82,6 +114,8 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      font-feature-settings: "tnum" 1, "kern" 1, "liga" 1;
+      font-variant-numeric: tabular-nums;
       overflow-x: hidden;
       position: relative;
     }
@@ -102,6 +136,9 @@
       line-height: 1.25;
       text-wrap: balance;
     }
+
+    /* Long-form prose: avoid orphans / ragged last lines where supported */
+    p, .feat-list li, .hv-text { text-wrap: pretty; }
 
     .accent { color: var(--accent); }
     .grad {
@@ -186,7 +223,7 @@
     .nav-cta svg { width: 15px; height: 15px; }
 
     /* ===== Hero ===== */
-    .hero { padding-top: 190px; padding-bottom: 120px; text-align: center; overflow: hidden; }
+    .hero { padding-top: 192px; padding-bottom: 120px; text-align: center; overflow: hidden; }
     .hero .container { position: relative; z-index: 2; }
 
     /* Signature backdrop: radial dawn-light + faint constellation grid + drifting paper planes */
@@ -202,12 +239,32 @@
       filter: blur(8px);
     }
     .hero-backdrop svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    /* Pointer parallax — JS sets --px/--py in the [-1,1] range; amplitude stays tiny. */
+    .hb-net {
+      --px: 0; --py: 0;
+      transform: translate3d(calc(var(--px) * 9px), calc(var(--py) * 7px), 0);
+      transition: transform .9s var(--ease-soft);
+      will-change: transform;
+    }
     .hb-line { stroke: var(--accent); stroke-width: 1; opacity: 0; }
-    .hb-node { fill: var(--accent); opacity: 0; }
+    /* Each node animates around its own centre so the breathe scales in place. */
+    .hb-node { fill: var(--accent); opacity: 0; transform-box: fill-box; transform-origin: center; }
     .reveal-on .hb-line { animation: hbLine 1.4s var(--ease-soft) forwards; }
-    .reveal-on .hb-node { animation: hbNode 1s var(--ease-out) forwards; }
+    /* Draw-in, then settle into a barely-perceptible breathe (opacity + micro-scale). */
+    .reveal-on .hb-node {
+      animation:
+        hbNode 1s var(--ease-out) forwards,
+        hbBreathe 7s ease-in-out 1.5s infinite;
+    }
+    /* De-sync the breathe so nodes don't pulse in unison — feels alive, not mechanical. */
+    .reveal-on .hb-node:nth-of-type(3n)   { animation-delay: 0s, 2.6s; }
+    .reveal-on .hb-node:nth-of-type(3n+1) { animation-delay: 0s, 4.1s; }
     @keyframes hbLine { to { opacity: 0.16; } }
     @keyframes hbNode { to { opacity: 0.28; } }
+    @keyframes hbBreathe {
+      0%, 100% { opacity: 0.24; transform: scale(0.96); }
+      50%      { opacity: 0.40; transform: scale(1.08); }
+    }
     .hb-plane { opacity: 0; animation: hbDrift 12s ease-in-out infinite; }
     .reveal-on .hb-plane { opacity: 1; }
     @keyframes hbDrift {
@@ -407,7 +464,7 @@
     /* ===== Features alternating ===== */
     .features { background: var(--bg-soft); }
     .feat-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center;
       margin-bottom: var(--s-10);
     }
     .feat-row:last-child { margin-bottom: 0; }
@@ -555,7 +612,7 @@
 
     /* ===== Author ===== */
     .author { background: var(--bg-soft); }
-    .author-wrap { display: grid; grid-template-columns: 200px 1fr; gap: 50px; align-items: start; }
+    .author-wrap { display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: start; }
     .author-mark {
       position: relative;
       width: 200px; height: 200px; border-radius: 28px;
@@ -573,7 +630,7 @@
     .author h2 { font-size: clamp(1.7rem, 3.2vw, 2.5rem); font-weight: 800; margin-bottom: 22px; }
     .author p { font-size: var(--t-md); color: var(--ink-soft); line-height: 1.85; margin-bottom: 18px; max-width: 640px; }
     .author p:last-of-type { margin-bottom: 0; }
-    .author-links { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
+    .author-links { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
     .author-link {
       display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px;
       border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
@@ -587,7 +644,7 @@
     .download { text-align: center; }
     .download h2 { font-size: var(--d-dl); font-weight: 800; margin-bottom: 18px; }
     .download .lede { max-width: 580px; margin: 0 auto 14px; }
-    .dl-meta { font-size: var(--t-sm); color: var(--ink-mute); margin-bottom: 42px; font-weight: 500; }
+    .dl-meta { font-size: var(--t-sm); color: var(--ink-mute); margin-bottom: 40px; font-weight: 500; }
     .dl-meta span { color: var(--accent); }
     .dl-buttons { display: flex; gap: var(--s-4); justify-content: center; flex-wrap: wrap; }
 
@@ -629,8 +686,9 @@
       .reveal { opacity: 1; transform: none; transition: none; }
       .hero-badge .dot { animation: none; }
       .hb-line, .hb-node, .hb-plane { animation: none; opacity: 0.16; }
-      .hb-node { opacity: 0.28; }
+      .hb-node { opacity: 0.28; transform: none; }
       .hb-plane { opacity: 1; }
+      .hb-net { transform: none; transition: none; }
       .btn-primary::after { display: none; }
     }
 
@@ -649,7 +707,7 @@
       section { padding: 84px 0; }
       .container, .container-narrow { padding: 0 22px; }
       .nav-links { display: none; }
-      .hero { padding-top: 140px; padding-bottom: 80px; }
+      .hero { padding-top: 144px; padding-bottom: 80px; }
       .problem-grid, .mini-grid, .trust-grid { grid-template-columns: 1fr; }
       .how-flow { grid-template-columns: 1fr; gap: 36px; }
       .author-wrap { grid-template-columns: 1fr; gap: 32px; justify-items: center; text-align: center; }
@@ -711,7 +769,7 @@
     <!-- Signature backdrop: dawn glow + constellation knowledge grid + drifting paper planes -->
     <div class="hero-backdrop" id="heroBackdrop" aria-hidden="true">
       <div class="glow"></div>
-      <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice">
+      <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <g class="hb-net">
           <line class="hb-line" x1="150" y1="120" x2="340" y2="220"/>
           <line class="hb-line" x1="340" y1="220" x2="230" y2="380" style="animation-delay:.1s"/>
@@ -722,14 +780,14 @@
           <line class="hb-line" x1="150" y1="120" x2="230" y2="380" style="animation-delay:.18s"/>
           <line class="hb-line" x1="980" y1="400" x2="1080" y2="540" style="animation-delay:.35s"/>
           <circle class="hb-node" cx="150" cy="120" r="4"/>
-          <circle class="hb-node" cx="340" cy="220" r="5" style="animation-delay:.1s"/>
-          <circle class="hb-node" cx="230" cy="380" r="3.5" style="animation-delay:.2s"/>
-          <circle class="hb-node" cx="560" cy="150" r="3" style="animation-delay:.15s"/>
-          <circle class="hb-node" cx="1050" cy="140" r="4" style="animation-delay:.25s"/>
-          <circle class="hb-node" cx="880" cy="250" r="5" style="animation-delay:.3s"/>
-          <circle class="hb-node" cx="980" cy="400" r="3.5" style="animation-delay:.35s"/>
-          <circle class="hb-node" cx="700" cy="180" r="3" style="animation-delay:.22s"/>
-          <circle class="hb-node" cx="1080" cy="540" r="3" style="animation-delay:.4s"/>
+          <circle class="hb-node" cx="340" cy="220" r="5"/>
+          <circle class="hb-node" cx="230" cy="380" r="3.5"/>
+          <circle class="hb-node" cx="560" cy="150" r="3"/>
+          <circle class="hb-node" cx="1050" cy="140" r="4"/>
+          <circle class="hb-node" cx="880" cy="250" r="5"/>
+          <circle class="hb-node" cx="980" cy="400" r="3.5"/>
+          <circle class="hb-node" cx="700" cy="180" r="3"/>
+          <circle class="hb-node" cx="1080" cy="540" r="3"/>
         </g>
         <!-- drifting paper planes -->
         <g class="hb-plane" style="transform-origin:210px 250px; animation-delay:0s">
@@ -1254,6 +1312,34 @@
       // Kick off the hero backdrop draw-in (respects reduced-motion via CSS).
       var hb = document.getElementById('heroBackdrop');
       if (hb) { requestAnimationFrame(function () { hb.classList.add('reveal-on'); }); }
+
+      // Featherweight pointer parallax on the constellation grid.
+      // Disabled for reduced-motion and touch/coarse pointers; capped amplitude.
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var finePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+      var hero = document.getElementById('hero');
+      var net = hb && hb.querySelector('.hb-net');
+      if (net && hero && finePointer && !reduceMotion) {
+        var ticking = false, tx = 0, ty = 0;
+        hero.addEventListener('pointermove', function (ev) {
+          var r = hero.getBoundingClientRect();
+          // Normalise to [-1, 1] around the hero centre.
+          tx = Math.max(-1, Math.min(1, ((ev.clientX - r.left) / r.width - 0.5) * 2));
+          ty = Math.max(-1, Math.min(1, ((ev.clientY - r.top) / r.height - 0.5) * 2));
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(function () {
+              net.style.setProperty('--px', tx.toFixed(3));
+              net.style.setProperty('--py', ty.toFixed(3));
+              ticking = false;
+            });
+          }
+        }, { passive: true });
+        hero.addEventListener('pointerleave', function () {
+          net.style.setProperty('--px', '0');
+          net.style.setProperty('--py', '0');
+        }, { passive: true });
+      }
 
       var reveals = document.querySelectorAll('.reveal');
       if (!('IntersectionObserver' in window)) {
