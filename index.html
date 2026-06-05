@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知脉 ZhiMai — 你的私人研究院</title>
+  <meta name="description" content="把你每天刷到的信息（YouTube / 网页 / PDF / Telegram / RSS）一键纳入，AI 自动读完、归档、连上你已有的知识，还能按主题写出带出处的研究报告。全程在你自己的电脑上，数据不出门。">
+  <meta property="og:title" content="知脉 ZhiMai — 你的私人研究院">
+  <meta property="og:description" content="采集 → 自动分析 → 自动建库 → 一键深度研究报告。数据全在本地。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FCFBF8;
+      --bg-soft: #F4F1EA;
+      --surface: #FFFFFF;
+      --ink: #1A1714;
+      --ink-soft: #4A453E;
+      --ink-mute: #8B847A;
+      --line: #E9E4D9;
+      --line-soft: #F0ECE3;
+      --accent: #C8541E;
+      --accent-soft: #FBEDE4;
+      --accent-deep: #A63F11;
+      --shadow-sm: 0 1px 2px rgba(40,30,20,0.04), 0 4px 16px rgba(40,30,20,0.04);
+      --shadow-md: 0 4px 12px rgba(40,30,20,0.05), 0 18px 50px rgba(40,30,20,0.07);
+      --shadow-lg: 0 8px 24px rgba(40,30,20,0.06), 0 40px 90px rgba(40,30,20,0.10);
+      --serif: 'Noto Serif SC', Georgia, serif;
+      --sans: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink-soft);
+      line-height: 1.7;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--serif);
+      color: var(--ink);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .accent { color: var(--accent); }
+    .grad {
+      background: linear-gradient(115deg, var(--accent), #E07A3E 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color .2s, opacity .2s; }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+    .container-narrow { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+
+    section { padding: 130px 0; position: relative; }
+
+    .eyebrow {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+      display: inline-block;
+    }
+
+    /* ===== Nav ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0;
+      background: rgba(252, 251, 248, 0.72);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      border-bottom: 1px solid transparent;
+      transition: border-color .35s, padding .35s, background .35s;
+    }
+    nav.scrolled { border-bottom-color: var(--line); padding: 12px 0; }
+
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 11px;
+      font-family: var(--serif); font-weight: 700; font-size: 1.18rem; color: var(--ink);
+      letter-spacing: 0;
+    }
+    .nav-logo .en { font-family: var(--sans); font-weight: 500; font-size: .82rem; color: var(--ink-mute); letter-spacing: .12em; }
+    .nav-logo svg { width: 30px; height: 30px; }
+
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a { color: var(--ink-soft); font-size: 0.9rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 20px; background: var(--ink); color: #fff;
+      font-weight: 500; font-size: 0.88rem; border-radius: 999px;
+      transition: transform .2s, background .2s;
+    }
+    .nav-cta:hover { background: var(--accent); transform: translateY(-1px); color: #fff; }
+    .nav-cta svg { width: 15px; height: 15px; }
+
+    /* ===== Hero ===== */
+    .hero { padding-top: 190px; padding-bottom: 120px; text-align: center; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 7px 16px 7px 13px; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 999px;
+      font-size: 0.8rem; font-weight: 500; color: var(--ink-soft);
+      margin-bottom: 40px; box-shadow: var(--shadow-sm);
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px; background: #2EAD6E; border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(46,173,110,0.18);
+      animation: pulse 2.4s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+    .hero h1 {
+      font-size: clamp(2.6rem, 6.2vw, 5rem);
+      font-weight: 900; line-height: 1.14; letter-spacing: -0.02em;
+      margin-bottom: 30px;
+    }
+
+    .hero-sub {
+      font-size: clamp(1.05rem, 1.9vw, 1.3rem);
+      color: var(--ink-soft); max-width: 660px; margin: 0 auto 46px;
+      line-height: 1.75; font-weight: 400;
+    }
+
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; align-items: center; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 11px;
+      padding: 16px 34px; background: var(--accent); color: #fff;
+      font-family: var(--sans); font-weight: 600; font-size: 1.02rem;
+      border-radius: 14px; border: none; cursor: pointer;
+      box-shadow: 0 10px 28px rgba(200,84,30,0.28);
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(200,84,30,0.36); background: var(--accent-deep); color: #fff; }
+    .btn-primary svg { width: 19px; height: 19px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 30px; background: transparent; color: var(--ink-mute);
+      font-family: var(--sans); font-weight: 500; font-size: 1.02rem;
+      border-radius: 14px; border: 1px solid var(--line);
+      cursor: not-allowed; opacity: 0.6;
+    }
+    .btn-ghost svg { width: 18px; height: 18px; }
+
+    .hero-micro {
+      margin-top: 20px; font-size: 0.92rem; color: var(--ink-soft); font-weight: 500;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .hero-micro::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #2EAD6E; box-shadow: 0 0 0 3px rgba(46,173,110,0.16); flex-shrink: 0;
+    }
+    .hero-note { margin-top: 10px; font-size: 0.82rem; color: var(--ink-mute); }
+
+    /* ===== Hero Visual ===== */
+    .hero-visual {
+      max-width: 1000px; margin: 84px auto 0;
+      border-radius: 20px; border: 1px solid var(--line);
+      background: var(--surface); overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .hv-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: var(--bg-soft);
+    }
+    .hv-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .hv-dot.r { background: #F0625E; } .hv-dot.y { background: #F5BE4F; } .hv-dot.g { background: #5FC97F; }
+    .hv-search {
+      margin-left: 14px; flex: 1; max-width: 340px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 8px; padding: 6px 12px;
+      font-size: 0.78rem; color: var(--ink-mute);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hv-search svg { width: 14px; height: 14px; }
+    .hv-search kbd {
+      margin-left: auto; font-family: var(--sans); font-size: 0.68rem;
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 5px;
+      padding: 1px 6px; color: var(--ink-mute);
+    }
+
+    .hv-body { display: grid; grid-template-columns: 188px 1fr 244px; min-height: 430px; }
+
+    .hv-side { border-right: 1px solid var(--line-soft); padding: 18px 0; background: #FDFCFA; }
+    .hv-side-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 9px 20px; font-size: 0.84rem; color: var(--ink-mute); font-weight: 500;
+    }
+    .hv-side-item.active { color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+    .hv-side-item svg { width: 16px; height: 16px; }
+
+    .hv-main { padding: 28px 30px; text-align: left; }
+    .hv-tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: .04em;
+      color: var(--accent); background: var(--accent-soft); padding: 3px 10px; border-radius: 999px; margin-bottom: 14px;
+    }
+    .hv-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--ink); margin-bottom: 9px; }
+    .hv-meta { font-size: 0.72rem; color: var(--ink-mute); display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .hv-text { font-size: 0.83rem; line-height: 1.85; color: var(--ink-soft); }
+    .hv-text p { margin-bottom: 13px; }
+    .ent {
+      padding: 1px 6px; background: var(--accent-soft); border-radius: 4px;
+      color: var(--accent-deep); font-weight: 500; font-size: 0.78rem;
+    }
+    .hv-cite { color: var(--accent); font-size: 0.66rem; vertical-align: super; font-weight: 600; }
+
+    .hv-panel { border-left: 1px solid var(--line-soft); padding: 24px 20px; text-align: left; background: #FDFCFA; }
+    .hv-panel-h {
+      font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--ink-mute); margin-bottom: 14px;
+    }
+    .hv-ent-row {
+      display: flex; align-items: center; gap: 9px; padding: 8px 11px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+      font-size: 0.76rem; color: var(--ink-soft); margin-bottom: 8px;
+    }
+    .hv-ent-row .c { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .hv-graph { margin-top: 22px; }
+    .hv-graph svg { width: 100%; height: 130px; }
+
+    /* ===== Strip ===== */
+    .strip {
+      padding: 30px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .strip-inner {
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px 28px;
+      font-size: 0.92rem; color: var(--ink-mute); font-weight: 500;
+    }
+    .strip-inner b { color: var(--ink-soft); font-weight: 600; }
+    .strip-sep { width: 4px; height: 4px; border-radius: 50%; background: var(--line); }
+
+    /* ===== Problem ===== */
+    .problem { background: var(--bg-soft); }
+    .sec-head { max-width: 720px; margin-bottom: 70px; }
+    .sec-head h2 { font-size: clamp(1.9rem, 3.8vw, 3rem); font-weight: 800; margin-bottom: 20px; }
+    .sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+    .lede { font-size: 1.12rem; color: var(--ink-soft); line-height: 1.8; }
+
+    .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .p-card {
+      padding: 36px 32px; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: var(--shadow-sm); transition: transform .35s, box-shadow .35s;
+    }
+    .p-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+    .p-num {
+      font-family: var(--serif); font-size: 1.05rem; font-weight: 700; color: var(--accent);
+      width: 42px; height: 42px; border-radius: 12px; background: var(--accent-soft);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 22px;
+    }
+    .p-card h3 { font-size: 1.22rem; margin-bottom: 12px; }
+    .p-card p { font-size: 0.96rem; color: var(--ink-mute); line-height: 1.7; }
+
+    /* ===== How ===== */
+    .how-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; position: relative; }
+    .how-flow::before {
+      content: ''; position: absolute; top: 33px; left: 12.5%; right: 12.5%; height: 2px;
+      background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 16px);
+      z-index: 0;
+    }
+    .step { text-align: center; position: relative; z-index: 1; }
+    .step-circle {
+      width: 66px; height: 66px; border-radius: 50%;
+      background: var(--surface); border: 1.5px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px; box-shadow: var(--shadow-sm);
+      transition: border-color .3s, transform .3s;
+    }
+    .step:hover .step-circle { border-color: var(--accent); transform: translateY(-4px); }
+    .step-circle svg { width: 26px; height: 26px; color: var(--accent); }
+    .step .idx { font-family: var(--serif); font-size: 0.8rem; color: var(--ink-mute); font-weight: 600; letter-spacing: .1em; margin-bottom: 8px; }
+    .step h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .step p { font-size: 0.9rem; color: var(--ink-mute); line-height: 1.65; max-width: 230px; margin: 0 auto; }
+
+    /* ===== Features alternating ===== */
+    .features { background: var(--bg-soft); }
+    .feat-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center;
+      margin-bottom: 130px;
+    }
+    .feat-row:last-child { margin-bottom: 0; }
+    .feat-row.reverse .feat-text { order: 2; }
+    .feat-row.reverse .feat-art { order: 1; }
+
+    .feat-kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.74rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+    .feat-kicker .pill {
+      font-size: 0.66rem; letter-spacing: .03em; text-transform: none;
+      background: var(--accent); color: #fff; padding: 2px 9px; border-radius: 999px;
+    }
+    .feat-text h3 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; margin-bottom: 18px; letter-spacing: -0.015em; }
+    .feat-text p { font-size: 1.08rem; color: var(--ink-soft); line-height: 1.8; margin-bottom: 22px; }
+    .feat-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .feat-list li { display: flex; align-items: flex-start; gap: 11px; font-size: 0.98rem; color: var(--ink-soft); }
+    .feat-list svg { width: 19px; height: 19px; color: var(--accent); flex-shrink: 0; margin-top: 3px; }
+
+    .feat-art {
+      border-radius: 20px; border: 1px solid var(--line); background: var(--surface);
+      box-shadow: var(--shadow-md); overflow: hidden; min-height: 320px;
+      display: flex; flex-direction: column;
+    }
+    .art-head {
+      padding: 13px 18px; border-bottom: 1px solid var(--line-soft); background: var(--bg-soft);
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.76rem; color: var(--ink-mute); font-weight: 500;
+    }
+    .art-head .d { width: 9px; height: 9px; border-radius: 50%; }
+    .art-body { padding: 24px; flex: 1; }
+
+    /* Deep research mock */
+    .dr-q {
+      display: flex; gap: 10px; align-items: center;
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 10px;
+      padding: 11px 14px; font-size: 0.88rem; color: var(--ink); font-weight: 500; margin-bottom: 18px;
+    }
+    .dr-q svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+    .dr-step { display: flex; gap: 12px; margin-bottom: 14px; }
+    .dr-step .marker { display: flex; flex-direction: column; align-items: center; }
+    .dr-step .ring {
+      width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      background: var(--accent-soft);
+    }
+    .dr-step .ring svg { width: 11px; height: 11px; color: var(--accent); }
+    .dr-step .line { width: 2px; flex: 1; background: var(--line); margin: 3px 0; }
+    .dr-step .body { padding-bottom: 4px; }
+    .dr-step .t { font-size: 0.83rem; color: var(--ink); font-weight: 600; margin-bottom: 2px; }
+    .dr-step .s { font-size: 0.76rem; color: var(--ink-mute); }
+    .dr-out {
+      margin-top: 6px; background: var(--accent-soft); border-radius: 10px; padding: 13px 15px;
+      font-size: 0.8rem; line-height: 1.7; color: var(--ink-soft);
+    }
+    .dr-out .ref { color: var(--accent); font-size: 0.64rem; vertical-align: super; font-weight: 700; }
+
+    /* Capture mock */
+    .cap-item {
+      display: flex; align-items: center; gap: 13px; padding: 13px 15px;
+      border: 1px solid var(--line); border-radius: 11px; margin-bottom: 11px; background: var(--bg);
+    }
+    .cap-ico {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cap-ico svg { width: 19px; height: 19px; color: #fff; }
+    .cap-info { flex: 1; min-width: 0; }
+    .cap-info .n { font-size: 0.85rem; color: var(--ink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cap-info .u { font-size: 0.72rem; color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cap-stat { font-size: 0.7rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+    .cap-stat.done { color: #2EAD6E; background: rgba(46,173,110,0.12); }
+    .cap-stat.run { color: var(--accent); background: var(--accent-soft); }
+
+    /* Wiki mock */
+    .wk-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+    .wk-meta { font-size: 0.7rem; color: var(--ink-mute); margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .wk-line { height: 9px; border-radius: 5px; background: var(--line-soft); margin-bottom: 10px; }
+    .wk-chip {
+      display: inline-block; font-size: 0.72rem; color: var(--accent-deep); background: var(--accent-soft);
+      padding: 3px 11px; border-radius: 999px; margin: 3px 5px 3px 0; font-weight: 500;
+    }
+    .wk-src { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 0.72rem; color: var(--ink-mute); }
+    .wk-src b { color: var(--ink-soft); }
+
+    /* Graph mock */
+    .graph-art svg { width: 100%; height: 280px; display: block; }
+    .graph-insight {
+      margin: 14px 24px 22px; padding: 13px 15px; border-radius: 11px;
+      background: var(--bg-soft); border: 1px solid var(--line);
+      font-size: 0.8rem; color: var(--ink-soft); display: flex; gap: 10px; align-items: flex-start;
+    }
+    .graph-insight svg { width: 17px; height: 17px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+
+    /* ===== Mini cards ===== */
+    .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .mini {
+      padding: 32px 30px; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 18px; box-shadow: var(--shadow-sm); transition: transform .3s, box-shadow .3s;
+    }
+    .mini:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .mini-ico {
+      width: 46px; height: 46px; border-radius: 12px; background: var(--accent-soft);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+    }
+    .mini-ico svg { width: 22px; height: 22px; color: var(--accent); }
+    .mini h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .mini p { font-size: 0.94rem; color: var(--ink-mute); line-height: 1.7; }
+
+    /* ===== Trust band ===== */
+    .trust { background: var(--ink); color: #E9E4D9; }
+    .trust h2 { color: #fff; }
+    .trust .eyebrow { color: #E59B6E; }
+    .trust .lede { color: #C9C2B6; }
+    .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 56px; }
+    .t-card {
+      padding: 32px; border-radius: 18px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+    }
+    .t-card .ic {
+      width: 44px; height: 44px; border-radius: 12px; margin-bottom: 18px;
+      background: rgba(229,155,110,0.16); display: flex; align-items: center; justify-content: center;
+    }
+    .t-card .ic svg { width: 22px; height: 22px; color: #E59B6E; }
+    .t-card h3 { color: #fff; font-size: 1.18rem; margin-bottom: 10px; }
+    .t-card p { font-size: 0.92rem; color: #B6AFA3; line-height: 1.7; }
+    .llm-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .llm-chip {
+      font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: #E9E4D9;
+      padding: 6px 15px; border-radius: 999px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* ===== Author ===== */
+    .author { background: var(--bg-soft); }
+    .author-wrap { display: grid; grid-template-columns: 200px 1fr; gap: 50px; align-items: start; }
+    .author-mark {
+      position: relative;
+      width: 200px; height: 200px; border-radius: 28px;
+      background: linear-gradient(150deg, #D9763C 0%, var(--accent) 52%, #A63F11 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 4.6rem; font-weight: 900; color: #fff;
+      box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.18);
+      text-shadow: 0 2px 12px rgba(120,40,10,0.28);
+    }
+    .author-mark::after {
+      content: ''; position: absolute; inset: 5px; border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.16); pointer-events: none;
+    }
+    .author h2 { font-size: clamp(1.7rem, 3.2vw, 2.5rem); font-weight: 800; margin-bottom: 22px; }
+    .author p { font-size: 1.08rem; color: var(--ink-soft); line-height: 1.85; margin-bottom: 18px; max-width: 640px; }
+    .author p:last-of-type { margin-bottom: 0; }
+    .author-links { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
+    .author-link {
+      display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px;
+      border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+      font-size: 0.9rem; font-weight: 500; color: var(--ink-soft);
+      transition: border-color .2s, color .2s, transform .2s;
+    }
+    .author-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+    .author-link svg { width: 16px; height: 16px; }
+
+    /* ===== Download ===== */
+    .download { text-align: center; }
+    .download h2 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; margin-bottom: 18px; }
+    .download .lede { max-width: 580px; margin: 0 auto 14px; }
+    .dl-meta { font-size: 0.92rem; color: var(--ink-mute); margin-bottom: 42px; font-weight: 500; }
+    .dl-meta span { color: var(--accent); }
+    .dl-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .unsigned {
+      max-width: 560px; margin: 32px auto 0; padding: 18px 22px;
+      background: var(--accent-soft); border: 1px solid #F2D7C5; border-radius: 14px;
+      font-size: 0.86rem; color: var(--ink-soft); line-height: 1.7; text-align: left;
+      display: flex; gap: 13px;
+    }
+    .unsigned svg { width: 20px; height: 20px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .unsigned b { color: var(--accent-deep); }
+    .unsigned a { font-weight: 600; }
+
+    /* ===== Footer ===== */
+    footer { padding: 56px 0 44px; border-top: 1px solid var(--line); background: var(--bg); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 26px; }
+    .footer-left { display: flex; flex-direction: column; gap: 7px; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+    .footer-brand .en { font-family: var(--sans); font-size: .78rem; font-weight: 500; color: var(--ink-mute); letter-spacing: .1em; }
+    .footer-meta { font-size: 0.8rem; color: var(--ink-mute); }
+    .footer-links { display: flex; align-items: center; gap: 26px; }
+    .footer-links a { font-size: 0.86rem; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 7px; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-links svg { width: 16px; height: 16px; }
+
+    /* ===== Reveal anim ===== */
+    .reveal { opacity: 0; transform: translateY(34px); transition: opacity .9s cubic-bezier(.16,.8,.3,1), transform .9s cubic-bezier(.16,.8,.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .rd1 { transition-delay: .08s; } .rd2 { transition-delay: .16s; } .rd3 { transition-delay: .24s; } .rd4 { transition-delay: .32s; }
+
+    /* Feature rows: staggered entrance — text leads, art trails */
+    .feat-row .feat-text.reveal { transition-delay: .05s; }
+    .feat-row .feat-art.reveal { transition-delay: .22s; }
+    .feat-row.reverse .feat-art.reveal { transition-delay: .05s; }
+    .feat-row.reverse .feat-text.reveal { transition-delay: .22s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .hero-badge .dot { animation: none; }
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .hv-body { grid-template-columns: 1fr; }
+      .hv-side, .hv-panel { display: none; }
+      .feat-row, .feat-row.reverse { grid-template-columns: 1fr; gap: 36px; }
+      .feat-row.reverse .feat-text, .feat-row.reverse .feat-art { order: initial; }
+      .feat-text { order: 1 !important; }
+      .feat-art { order: 2 !important; }
+      .how-flow { grid-template-columns: repeat(2, 1fr); gap: 44px; }
+      .how-flow::before { display: none; }
+    }
+    @media (max-width: 768px) {
+      section { padding: 84px 0; }
+      .container, .container-narrow { padding: 0 22px; }
+      .nav-links { display: none; }
+      .hero { padding-top: 140px; padding-bottom: 80px; }
+      .problem-grid, .mini-grid, .trust-grid { grid-template-columns: 1fr; }
+      .how-flow { grid-template-columns: 1fr; gap: 36px; }
+      .author-wrap { grid-template-columns: 1fr; gap: 32px; justify-items: center; text-align: center; }
+      .author p { text-align: left; }
+      .author-links { justify-content: center; }
+      .footer-inner { flex-direction: column; text-align: center; align-items: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+      .hero-buttons { flex-direction: column; }
+      .dl-buttons { flex-direction: column; align-items: stretch; }
+    }
+    @media (max-width: 600px) {
+      /* Product mocks: shrink padding + type so the graph SVG fits a 375px screen */
+      .art-body { padding: 16px; }
+      .cap-item { padding: 10px 11px; gap: 10px; }
+      .cap-ico { width: 30px; height: 30px; }
+      .cap-ico svg { width: 16px; height: 16px; }
+      .cap-info .n { font-size: 0.8rem; }
+      .cap-info .u { font-size: 0.68rem; }
+      .cap-stat { font-size: 0.66rem; padding: 2px 7px; }
+      .graph-art svg { height: 220px; }
+      .graph-art svg text { font-size: 13px; }
+      .graph-insight { margin: 12px 16px 18px; padding: 11px 13px; font-size: 0.76rem; }
+      .wk-title { font-size: 1.08rem; }
+      .dr-out { font-size: 0.76rem; padding: 11px 13px; }
+      .dr-q { font-size: 0.82rem; padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Nav ===== -->
+  <nav id="nav">
+    <div class="container nav-inner">
+      <div class="nav-logo">
+        <svg viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="9" fill="#C8541E"/>
+          <circle cx="11" cy="11" r="2.4" fill="#FCFBF8"/>
+          <circle cx="22" cy="9" r="1.8" fill="#FCFBF8"/>
+          <circle cx="21" cy="21" r="2.2" fill="#FCFBF8"/>
+          <circle cx="10" cy="22" r="1.7" fill="#FCFBF8"/>
+          <path d="M11 11L22 9M11 11L21 21M22 9L21 21M11 11L10 22M21 21L10 22" stroke="#FCFBF8" stroke-width="1" opacity="0.55"/>
+        </svg>
+        知脉 <span class="en">ZhiMai</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#how">怎么工作</a></li>
+        <li><a href="#features">核心能力</a></li>
+        <li><a href="#author">关于作者</a></li>
+        <li><a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+      <a href="#download" class="nav-cta">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a1 1 0 011 1v7.6l2.3-2.3a1 1 0 111.4 1.4l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L9 11.6V4a1 1 0 011-1z"/><path d="M3 15a1 1 0 011 1v1h12v-1a1 1 0 112 0v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1a1 1 0 011-1z"/></svg>
+        下载
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-badge reveal">
+        <span class="dot"></span>
+        v0.9.0 · 本地运行 · 数据不出门
+      </div>
+
+      <h1 class="reveal rd1">
+        你每天刷到的东西，<br>
+        值得一座<span class="grad">私人研究院</span>来收着。
+      </h1>
+
+      <p class="hero-sub reveal rd2">
+        粘贴链接或丢个 PDF，AI 自动读完、建库，按主题写出带出处的研究报告。
+      </p>
+
+      <div class="hero-buttons reveal rd3">
+        <a href="https://github.com/cyrus-tt/zhimai-releases/releases/download/v0.9.0/ZhiMai_0.9.0_aarch64.dmg" class="btn-primary">
+          <svg viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          下载 macOS 版（Apple Silicon）
+        </a>
+        <button class="btn-ghost" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.5L9.75 2.2v9.3H0V3.5zm0 17L9.75 21.8v-9.2H0v7.9zM10.9 2.05L24 0v11.5H10.9V2.05zm0 19.9L24 24V12.6H10.9v9.35z"/></svg>
+          Windows 版正在路上
+        </button>
+      </div>
+      <p class="hero-micro reveal rd3">全程在你自己电脑上，数据不出门</p>
+      <p class="hero-note reveal rd3">首次打开请右键点图标 → 打开 · 免费使用 · 自带 AI key</p>
+
+      <!-- App preview -->
+      <div class="hero-visual reveal rd2">
+        <div class="hv-bar">
+          <span class="hv-dot r"></span><span class="hv-dot y"></span><span class="hv-dot g"></span>
+          <div class="hv-search">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.7 10.3a6 6 0 10-1.4 1.4l.1.1 3.8 3.8a1 1 0 001.4-1.4l-3.8-3.8a1 1 0 00-.1-.1zM11 6.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+            用大白话问点什么…
+            <kbd>⌘K</kbd>
+          </div>
+        </div>
+        <div class="hv-body">
+          <div class="hv-side">
+            <div class="hv-side-item">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v9A1.5 1.5 0 0112.5 14h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
+              采集箱
+            </div>
+            <div class="hv-side-item active">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3zm2 1.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zM4 7.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5A.5.5 0 014 7.5z"/></svg>
+              自动百科
+            </div>
+            <div class="hv-side-item">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 5a3 3 0 116 0 3 3 0 01-6 0zM2 13a4 4 0 018 0v1H2v-1z"/></svg>
+              实体
+            </div>
+            <div class="hv-side-item">
+              <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="5" r="2"/><circle cx="8" cy="12" r="2"/></svg>
+              知识图谱
+            </div>
+            <div class="hv-side-item">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.8 4.6L14.5 6l-3.5 3 1.2 5L8 11.5 3.8 14l1.2-5L1.5 6l4.7-.4L8 1z"/></svg>
+              深度研究
+            </div>
+          </div>
+
+          <div class="hv-main">
+            <span class="hv-tag">自动维护 · 2 小时前更新</span>
+            <div class="hv-title">2026 大模型定价格局</div>
+            <div class="hv-meta">
+              <span>来源：12 条采集</span>
+              <span>实体 8 个</span>
+              <span>引用可溯源</span>
+            </div>
+            <div class="hv-text">
+              <p>2026 Q1，大模型定价继续往下走。<span class="ent">OpenAI</span> 把 GPT 系列输入价格下调，<span class="ent">Anthropic</span> 给 <span class="ent">Claude</span> 上了用量计费和提示词缓存折扣。</p>
+              <p><span class="ent">DeepSeek</span> 用更低的单价持续给西方厂商施压，买方开始普遍走多供应商策略来压低每次查询的成本。</p>
+              <p>核心趋势：推理成本三年里掉了两个数量级，让一批原本算不过账的 AI 产品第一次跑通了商业模型。</p>
+            </div>
+          </div>
+
+          <div class="hv-panel">
+            <div class="hv-panel-h">识别到的实体</div>
+            <div class="hv-ent-row"><span class="c" style="background:#C8541E"></span>OpenAI · 公司</div>
+            <div class="hv-ent-row"><span class="c" style="background:#3B82F6"></span>Anthropic · 公司</div>
+            <div class="hv-ent-row"><span class="c" style="background:#2EAD6E"></span>DeepSeek · 公司</div>
+            <div class="hv-ent-row"><span class="c" style="background:#A855F7"></span>Claude · 模型</div>
+            <div class="hv-graph">
+              <div class="hv-panel-h" style="margin-top:8px">知识图谱</div>
+              <svg viewBox="0 0 220 130">
+                <line x1="110" y1="28" x2="46" y2="74" stroke="#E9E4D9" stroke-width="1.5"/>
+                <line x1="110" y1="28" x2="174" y2="74" stroke="#E9E4D9" stroke-width="1.5"/>
+                <line x1="46" y1="74" x2="110" y2="112" stroke="#E9E4D9" stroke-width="1.5"/>
+                <line x1="174" y1="74" x2="110" y2="112" stroke="#E9E4D9" stroke-width="1.5"/>
+                <line x1="46" y1="74" x2="174" y2="74" stroke="#E9E4D9" stroke-width="1"/>
+                <circle cx="110" cy="28" r="8" fill="#C8541E"/>
+                <circle cx="46" cy="74" r="6" fill="#3B82F6"/>
+                <circle cx="174" cy="74" r="6" fill="#2EAD6E"/>
+                <circle cx="110" cy="112" r="7" fill="#A855F7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Strip ===== -->
+  <div class="strip">
+    <div class="container strip-inner reveal">
+      <span>一键纳入</span>
+      <span class="strip-sep"></span>
+      <b>YouTube</b><span class="strip-sep"></span>
+      <b>任意网页</b><span class="strip-sep"></span>
+      <b>PDF</b><span class="strip-sep"></span>
+      <b>Telegram</b><span class="strip-sep"></span>
+      <b>RSS</b>
+      <span class="strip-sep"></span>
+      <span>进来就自动分析</span>
+    </div>
+  </div>
+
+  <!-- ===== Problem ===== -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <div class="sec-head reveal">
+        <span class="eyebrow">为什么需要它</span>
+        <h2>你不是没读，<br>是读完就丢了。</h2>
+        <p class="lede">每天几十个标签页、收藏夹、转发给自己的链接。当时觉得有用，过两周再也找不到，也想不起来当时为什么觉得它重要。</p>
+      </div>
+
+      <div class="problem-grid">
+        <div class="p-card reveal rd1">
+          <div class="p-num">01</div>
+          <h3>收藏 = 永久遗忘</h3>
+          <p>存进去那一刻，往往就是你最后一次看它。收藏夹越攒越厚，真要用的时候一条都想不起来。</p>
+        </div>
+        <div class="p-card reveal rd2">
+          <div class="p-num">02</div>
+          <h3>信息散成一地</h3>
+          <p>YouTube 在浏览器、PDF 在下载文件夹、好文章在 Telegram。没有一个地方把它们串起来。</p>
+        </div>
+        <div class="p-card reveal rd3">
+          <div class="p-num">03</div>
+          <h3>AI 工具要先把你的数据交出去</h3>
+          <p>大部分 AI 笔记得把你的私密资料上传到别人的服务器。你的阅读史、研究方向，凭什么给它。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How ===== -->
+  <section class="how" id="how">
+    <div class="container">
+      <div class="sec-head center reveal">
+        <span class="eyebrow">它怎么工作</span>
+        <h2>你只管丢进来，剩下交给它。</h2>
+      </div>
+
+      <div class="how-flow">
+        <div class="step reveal rd1">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="idx">第一步</div>
+          <h3>采集</h3>
+          <p>粘贴 YouTube 链接 / 网页 URL，或丢进 PDF、接上 Telegram、RSS。一步入库，抓字幕不用配 API Key。</p>
+        </div>
+        <div class="step reveal rd2">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4c0 1.5-.8 2.8-2 3.5"/><path d="M9.7 17h4.6"/><path d="M10 21h4"/><path d="M7 11a5 5 0 119 3.5l-.5.5A3.4 3.4 0 0014 18.5V19a2 2 0 11-4 0v-.5a3.4 3.4 0 00-1-2.4l-.5-.5A5 5 0 017 11z"/></svg>
+          </div>
+          <div class="idx">第二步</div>
+          <h3>自动分析</h3>
+          <p>每条进来，LLM 立刻读完、抽出实体和概念、打标签——不用你点「开始处理」。</p>
+        </div>
+        <div class="step reveal rd3">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/></svg>
+          </div>
+          <div class="idx">第三步</div>
+          <h3>自动建库</h3>
+          <p>自动生成 / 更新 wiki 词条，标好来源出处，和你库里已有的知识互相连上。</p>
+        </div>
+        <div class="step reveal rd4">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 6.1L21 9.5l-5 4.1 1.6 6.9L12 16.8 6.4 20.5 8 13.6 3 9.5l6.6-.4L12 3z"/></svg>
+          </div>
+          <div class="idx">第四步</div>
+          <h3>深度研究</h3>
+          <p>给一个主题，它自己拆子问题、在你的库里多轮检索，写出一份带引用的研究报告。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Features ===== -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="sec-head center reveal" style="margin-bottom:90px">
+        <span class="eyebrow">核心能力</span>
+        <h2>一个研究助理该会的，<br>都在你的电脑里跑着。</h2>
+      </div>
+
+      <!-- Deep Research -->
+      <div class="feat-row">
+        <div class="feat-text reveal">
+          <div class="feat-kicker">Deep Research <span class="pill">v0.9 新功能</span></div>
+          <h3>深度研究：给个主题，<br>它替你查、替你写。</h3>
+          <p>输入一个主题，它自己把问题拆成子问题，在你的知识库里一轮一轮检索，最后写出一份有理有据、句句能溯源的研究报告。像有个研究助理，只读你信得过的料。</p>
+          <ul class="feat-list">
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>自动拆解子问题，多步 RAG 检索</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>每个结论都带来源引用，能点回原文</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>只检索你自己的库，不去网上抓不可控的料</li>
+          </ul>
+        </div>
+        <div class="feat-art reveal">
+          <div class="art-head"><span class="d" style="background:#C8541E"></span>深度研究 · 进行中</div>
+          <div class="art-body">
+            <div class="dr-q">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a7 7 0 105.3 11.6l3 3a1 1 0 001.4-1.4l-3-3A7 7 0 009 2zm0 2a5 5 0 110 10A5 5 0 019 4z"/></svg>
+              开源大模型 2026 年的成本拐点在哪？
+            </div>
+            <div class="dr-step">
+              <div class="marker"><div class="ring"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg></div><div class="line"></div></div>
+              <div class="body"><div class="t">拆出子问题 · 4 个</div><div class="s">推理单价 / 训练成本 / 硬件 / 开源闭源差距</div></div>
+            </div>
+            <div class="dr-step">
+              <div class="marker"><div class="ring"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg></div><div class="line"></div></div>
+              <div class="body"><div class="t">检索知识库 · 命中 23 段</div><div class="s">来自 9 条采集，含 YouTube 字幕 3 条</div></div>
+            </div>
+            <div class="dr-step">
+              <div class="marker"><div class="ring"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg></div></div>
+              <div class="body" style="width:100%">
+                <div class="t">综合成报告</div>
+                <div class="dr-out">拐点出现在推理侧而非训练侧：开源模型借量化与蒸馏把单位 token 成本压到闭源的几分之一，但在长上下文稳定性上仍有差距……<span class="dr-tag">每段可溯源</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Capture -->
+      <div class="feat-row reverse">
+        <div class="feat-text reveal">
+          <div class="feat-kicker">全源采集</div>
+          <h3>看到什么，<br>粘进来就完事了。</h3>
+          <p>YouTube 字幕粘链接就行，不用申请 API Key；任意网页自动抓取入库；PDF / Telegram / RSS 全收。东西一进来就自动分析，不用手动点开始。</p>
+          <ul class="feat-list">
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>YouTube 粘链接直接抓字幕</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>网页 URL 自动抓正文入库</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>采集后自动触发 LLM 分析</li>
+          </ul>
+        </div>
+        <div class="feat-art reveal">
+          <div class="art-head"><span class="d" style="background:#2EAD6E"></span>采集箱 · 实时</div>
+          <div class="art-body">
+            <div class="cap-item">
+              <div class="cap-ico" style="background:#F0625E"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.9-.5-5.6a2.9 2.9 0 00-2-2C18.7 4 12 4 12 4s-6.7 0-8.5.4a2.9 2.9 0 00-2 2C1 8.1 1 12 1 12s0 3.9.5 5.6a2.9 2.9 0 002 2C5.3 20 12 20 12 20s6.7 0 8.5-.4a2.9 2.9 0 002-2C23 15.9 23 12 23 12zM10 15.5v-7l6 3.5-6 3.5z"/></svg></div>
+              <div class="cap-info"><div class="n">大模型推理成本拆解（YouTube）</div><div class="u">youtube.com/watch?v=… · 字幕已抓取</div></div>
+              <span class="cap-stat done">已分析</span>
+            </div>
+            <div class="cap-item">
+              <div class="cap-ico" style="background:#3B82F6"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12a5 5 0 015-5h3v2h-3a3 3 0 100 6h3v2h-3a5 5 0 01-5-5zm6 1h4v-2h-4v2zm5.1-6h-3v2h3a3 3 0 010 6h-3v2h3a5 5 0 100-10z"/></svg></div>
+              <div class="cap-info"><div class="n">A16Z：本地优先 AI 应用的机会</div><div class="u">a16z.com/local-first-ai · 正文已抓取</div></div>
+              <span class="cap-stat done">已分析</span>
+            </div>
+            <div class="cap-item">
+              <div class="cap-ico" style="background:#C8541E"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5z"/></svg></div>
+              <div class="cap-info"><div class="n">2026 LLM 定价白皮书.pdf</div><div class="u">本地文件 · 28 页</div></div>
+              <span class="cap-stat run">分析中…</span>
+            </div>
+            <div class="cap-item">
+              <div class="cap-ico" style="background:#2EAD6E"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.8 16.3l-.2 3c.4 0 .6-.2.8-.4l1.9-1.8 3.9 2.9c.7.4 1.3.2 1.5-.7l2.7-12.6c.3-1.1-.4-1.6-1.1-1.3L3.4 9.9c-1.1.4-1 1-.2 1.3l4.3 1.3 9.9-6.2c.5-.3.9-.1.5.2l-8 7.2z"/></svg></div>
+              <div class="cap-info"><div class="n">AI 前沿日报 · Telegram 频道</div><div class="u">@ai_daily · 新增 4 条</div></div>
+              <span class="cap-stat run">分析中…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-Wiki -->
+      <div class="feat-row">
+        <div class="feat-text reveal">
+          <div class="feat-kicker">Auto-Wiki 自动百科</div>
+          <h3>每条采集，<br>都长进一条词条里。</h3>
+          <p>每条采集自动变成或更新一条结构化词条，标清来源出处。同一个主题被多次提到，它会自己合并、补充、交叉引用。你用得越多，它越懂你在关心什么。</p>
+          <ul class="feat-list">
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>结构化词条，自动交叉引用</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>每条信息都标清来源出处</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>越用越懂你的关注重点</li>
+          </ul>
+        </div>
+        <div class="feat-art reveal">
+          <div class="art-head"><span class="d" style="background:#A855F7"></span>词条 · 自动维护</div>
+          <div class="art-body">
+            <div class="wk-title">本地优先 AI 应用</div>
+            <div class="wk-meta"><span>来源：6 条采集</span><span>3 小时前更新</span><span>双向链接 4</span></div>
+            <div class="wk-line" style="width:100%"></div>
+            <div class="wk-line" style="width:92%"></div>
+            <div class="wk-line" style="width:96%"></div>
+            <div class="wk-line" style="width:74%"></div>
+            <div style="margin-top:14px">
+              <span class="wk-chip"># 隐私</span>
+              <span class="wk-chip"># 数据主权</span>
+              <span class="wk-chip"># 边缘推理</span>
+              <span class="wk-chip"># RAG</span>
+            </div>
+            <div class="wk-src">来源：<b>A16Z 博客</b> · <b>2026 LLM 定价白皮书</b> · <b>YouTube 访谈 ×2</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Knowledge Graph -->
+      <div class="feat-row reverse">
+        <div class="feat-text reveal">
+          <div class="feat-kicker">知识图谱</div>
+          <h3>看清你脑子里，<br>东西是怎么连的。</h3>
+          <p>把人、公司、概念之间的关系画出来，自动聚类成不同社区，还会主动指出你的知识盲区，和把不同领域连起来的「桥接点」。</p>
+          <ul class="feat-list">
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>实体关系图 + 社区检测</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>洞察面板：发现知识空白</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L8 12.6l7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>找出连接不同领域的桥接节点</li>
+          </ul>
+        </div>
+        <div class="feat-art graph-art reveal">
+          <div class="art-head"><span class="d" style="background:#3B82F6"></span>知识图谱 · 4 个社区</div>
+          <svg viewBox="0 0 460 280" preserveAspectRatio="xMidYMid meet">
+            <g stroke="#E9E4D9" stroke-width="1.3">
+              <line x1="120" y1="90" x2="200" y2="140"/>
+              <line x1="120" y1="90" x2="80" y2="170"/>
+              <line x1="200" y1="140" x2="80" y2="170"/>
+              <line x1="200" y1="140" x2="320" y2="100"/>
+              <line x1="320" y1="100" x2="380" y2="170"/>
+              <line x1="320" y1="100" x2="270" y2="200"/>
+              <line x1="380" y1="170" x2="270" y2="200"/>
+              <line x1="200" y1="140" x2="270" y2="200"/>
+              <line x1="80" y1="170" x2="170" y2="230"/>
+              <line x1="200" y1="140" x2="170" y2="230"/>
+            </g>
+            <line x1="200" y1="140" x2="320" y2="100" stroke="#C8541E" stroke-width="2.4" stroke-dasharray="5 4"/>
+            <g>
+              <circle cx="120" cy="90" r="13" fill="#3B82F6"/>
+              <circle cx="80" cy="170" r="10" fill="#3B82F6"/>
+              <circle cx="170" cy="230" r="9" fill="#3B82F6"/>
+              <circle cx="200" cy="140" r="16" fill="#C8541E"/>
+              <circle cx="320" cy="100" r="14" fill="#2EAD6E"/>
+              <circle cx="380" cy="170" r="10" fill="#2EAD6E"/>
+              <circle cx="270" cy="200" r="11" fill="#A855F7"/>
+            </g>
+            <text x="200" y="172" text-anchor="middle" font-family="Noto Sans SC, sans-serif" font-size="11" fill="#8B847A">桥接节点</text>
+          </svg>
+          <div class="graph-insight">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-3.5 10.9c.3.2.5.6.5 1V15a1 1 0 001 1h4a1 1 0 001-1v-1.1c0-.4.2-.8.5-1A6 6 0 0010 2zM8 18a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/></svg>
+            <span>洞察：<b style="color:var(--accent-deep)">「本地优先」</b>连起了「隐私」与「推理成本」两个原本独立的社区——值得深挖。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Mini features ===== -->
+  <section id="more">
+    <div class="container">
+      <div class="sec-head center reveal" style="margin-bottom:60px">
+        <span class="eyebrow">还有这些</span>
+        <h2>顺手好用的细节。</h2>
+      </div>
+      <div class="mini-grid">
+        <div class="mini reveal rd1">
+          <div class="mini-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <h3>⌘K 智能搜索</h3>
+          <p>用大白话提问，RAG 检索 + 流式作答 + 标注来源。⌘J 还能在任何地方叫出全局 AI 助手浮窗。</p>
+        </div>
+        <div class="mini reveal rd2">
+          <div class="mini-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-6 0v4"/><rect x="4" y="9" width="16" height="11" rx="2"/></svg>
+          </div>
+          <h3>标准 Markdown 库</h3>
+          <p>数据存成标准 markdown 知识库，可以直接用 Obsidian 打开。不锁定、不绑架，随时能搬走。</p>
+        </div>
+        <div class="mini reveal rd3">
+          <div class="mini-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3>多 LLM 任选</h3>
+          <p>Claude / OpenAI / DeepSeek / Azure 随你挑，自带 key——省钱、合规、效果，你说了算。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Trust ===== -->
+  <section class="trust" id="trust">
+    <div class="container">
+      <div class="sec-head center reveal">
+        <span class="eyebrow">数据归你</span>
+        <h2>你的阅读史，<br>留在你自己的电脑里。</h2>
+        <p class="lede" style="margin:0 auto">不上传、不外传，隐私默认安全。这不是一条隐私政策，是它本来就跑在你机器上的事实。</p>
+      </div>
+      <div class="trust-grid">
+        <div class="t-card reveal rd1">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>Local-first 本地优先</h3>
+          <p>采集、分析、检索、报告全在本地完成。数据不进任何第三方服务器，合规是架构带来的，不是政策承诺的。</p>
+        </div>
+        <div class="t-card reveal rd2">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <h3>开放格式，随时搬走</h3>
+          <p>知识库就是一堆标准 markdown 文件，Obsidian 直接能开。哪天不想用了，数据原封不动带走，不留人质。</p>
+        </div>
+        <div class="t-card reveal rd3">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <h3>自带 AI key</h3>
+          <p>只有你主动调 LLM 时，才会把这一次需要的内容发给你自己配的模型。用谁、花多少，全你说了算。</p>
+          <div class="llm-row">
+            <span class="llm-chip">Claude</span>
+            <span class="llm-chip">OpenAI</span>
+            <span class="llm-chip">DeepSeek</span>
+            <span class="llm-chip">Azure</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Author ===== -->
+  <section class="author" id="author">
+    <div class="container-narrow">
+      <div class="author-wrap">
+        <div class="author-mark reveal">C</div>
+        <div class="reveal rd1">
+          <span class="eyebrow">关于作者</span>
+          <h2>一个非技术出身的人，<br>自己写了它。</h2>
+          <p>我是 Cyrus，不是科班程序员，但一头扎进 AI 全栈实践。知脉是我自己的独立产品——我自己每天在用。</p>
+          <p>做它的原因很简单：我也受够了「读了一堆、什么都没留下」。市面上的工具要么把我的数据传走，要么只是个更好看的收藏夹，没人真的帮我把读过的东西用起来。所以我自己动手做了一个。</p>
+          <p>它会一直更新。有问题、有想法，直接找我。</p>
+          <div class="author-links">
+            <a class="author-link" href="https://cyrustyj.xyz" target="_blank" rel="noopener">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zM2 8a6 6 0 011-3.3c.2.4.6.8 1.1 1 .4.2.6.5.6 1 0 .7.6 1.2 1.3 1.2.3 0 .5.2.5.5v.7c0 .8.7 1.5 1.5 1.5.3 0 .5.2.5.5v1.9A6 6 0 012 8zm9.8 5.2c0-.5.3-1 .8-1.2.5-.2.9-.7.9-1.3v-.2c0-.5-.3-.9-.7-1.1l-.9-.5a1 1 0 00-1.2.2l-.3.4a1 1 0 01-.8.4H8.5a1 1 0 110-2c.3 0 .5-.2.5-.5s.2-.5.5-.5h.4a1 1 0 001-1V5.2A6 6 0 0114 8a6 6 0 01-2.2 5.2z"/></svg>
+              cyrustyj.xyz
+            </a>
+            <a class="author-link" href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+            <a class="author-link" href="mailto:cyrusttyj2@gmail.com">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.2l7 4.2 7-4.2V4a1 1 0 00-1-1H2z"/></svg>
+              邮件
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Download ===== -->
+  <section class="download" id="download">
+    <div class="container">
+      <span class="eyebrow reveal">开始</span>
+      <h2 class="reveal rd1">装上它，开始攒你自己的研究院。</h2>
+      <p class="lede reveal rd2">免费使用，数据归你，自带 AI key。现支持 macOS（Apple Silicon），Windows 版即将推出。</p>
+      <p class="dl-meta reveal rd2"><span>v0.9.0</span> · 本地运行 · 数据不出门</p>
+
+      <div class="dl-buttons reveal rd3">
+        <a href="https://github.com/cyrus-tt/zhimai-releases/releases/download/v0.9.0/ZhiMai_0.9.0_aarch64.dmg" class="btn-primary">
+          <svg viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          下载 macOS 版（Apple Silicon）
+        </a>
+        <button class="btn-ghost" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.5L9.75 2.2v9.3H0V3.5zm0 17L9.75 21.8v-9.2H0v7.9zM10.9 2.05L24 0v11.5H10.9V2.05zm0 19.9L24 24V12.6H10.9v9.35z"/></svg>
+          Windows 版正在路上
+        </button>
+      </div>
+
+      <div class="unsigned reveal rd3">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.5 2.7a1.7 1.7 0 013 0l6.3 11.3a1.7 1.7 0 01-1.5 2.5H3.7a1.7 1.7 0 01-1.5-2.5L8.5 2.7zM10 7a1 1 0 00-1 1v3a1 1 0 102 0V8a1 1 0 00-1-1zm0 7a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/></svg>
+        <span>这个安装包还没做苹果签名（独立开发者，签名证书在路上）。首次打开时 macOS 可能拦一下，<b>右键点开图标 → 选「打开」</b>，确认一次就好，之后正常使用。介意的话也可以先看 <a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub 上的源码</a>。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <div class="footer-brand">知脉 <span class="en">ZhiMai</span></div>
+        <span class="footer-meta">你的私人研究院 · v0.9.0 · 由 Cyrus 独立开发 · Tauri + React + Rust</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://cyrustyj.xyz" target="_blank" rel="noopener">cyrustyj.xyz</a>
+        <a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+        <a href="mailto:cyrusttyj2@gmail.com">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.2l7 4.2 7-4.2V4a1 1 0 00-1-1H2z"/></svg>
+          邮件
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var nav = document.getElementById('nav');
+      var scrolled = false;
+      window.addEventListener('scroll', function () {
+        var s = window.scrollY > 16;
+        if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+      }, { passive: true });
+
+      var reveals = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        reveals.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+      reveals.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
