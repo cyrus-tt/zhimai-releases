@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zhimai.cyrustyj.xyz/sitemap.xml
