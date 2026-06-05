@@ -223,7 +223,7 @@
     .nav-cta svg { width: 15px; height: 15px; }
 
     /* ===== Hero ===== */
-    .hero { padding-top: 192px; padding-bottom: 120px; text-align: center; overflow: hidden; }
+    .hero { padding-top: 192px; padding-bottom: 64px; text-align: center; overflow: hidden; }
     .hero .container { position: relative; z-index: 2; }
 
     /* Signature backdrop: radial dawn-light + faint constellation grid + drifting paper planes */
@@ -340,71 +340,162 @@
     }
     .hero-note { margin-top: 10px; font-size: var(--t-2xs); color: var(--ink-mute); }
 
-    /* ===== Hero Visual ===== */
-    .hero-visual {
-      max-width: 1000px; margin: var(--s-9) auto 0;
-      border-radius: 20px; border: 1px solid var(--line);
+    /* ===== Product showcase (the "this is the app" centre visual) ===== */
+    .showcase {
+      padding-top: var(--s-9); padding-bottom: var(--s-10);
+      position: relative; overflow: hidden;
+    }
+    /* a soft, dawn-light pool that lifts the window off the page */
+    .showcase::before {
+      content: ''; position: absolute; left: 50%; top: 5%;
+      width: min(1180px, 116%); height: 560px; transform: translateX(-50%);
+      background:
+        radial-gradient(48% 52% at 50% 38%, rgba(200,84,30,0.09), transparent 70%),
+        radial-gradient(42% 46% at 72% 60%, rgba(224,122,62,0.06), transparent 74%);
+      filter: blur(10px); z-index: 0; pointer-events: none;
+    }
+    .showcase .container { position: relative; z-index: 2; }
+
+    .sc-cap {
+      text-align: center; max-width: 680px; margin: 0 auto var(--s-8);
+    }
+    .sc-cap .eyebrow { justify-content: center; }
+    .sc-cap h2 { font-size: var(--d-h2); font-weight: 800; margin-bottom: 16px; }
+    .sc-cap p { font-size: var(--t-md); color: var(--ink-soft); line-height: 1.75; }
+
+    /* The window itself — generous radius, layered shadow, hairline rim-light top */
+    .sc-window {
+      max-width: 1040px; margin: 0 auto;
+      border-radius: 18px; border: 1px solid var(--line);
       background: var(--surface); overflow: hidden;
-      box-shadow: var(--shadow-lg);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.7) inset,
+        0 6px 18px rgba(40,30,20,0.06),
+        0 34px 80px rgba(40,30,20,0.13),
+        0 60px 140px rgba(120,60,20,0.08);
+      transform: translateY(0);
+      transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
     }
-    .hv-bar {
+    .sc-window:hover { transform: translateY(-4px); box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 10px 26px rgba(40,30,20,0.07), 0 46px 100px rgba(40,30,20,0.15), 0 80px 170px rgba(120,60,20,0.10); }
+
+    /* title bar */
+    .sc-bar {
       display: flex; align-items: center; gap: 8px;
-      padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: var(--bg-soft);
+      padding: 13px 18px; border-bottom: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, #FBF9F4, var(--bg-soft));
     }
-    .hv-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .hv-dot.r { background: #F0625E; } .hv-dot.y { background: #F5BE4F; } .hv-dot.g { background: #5FC97F; }
-    .hv-search {
-      margin-left: 14px; flex: 1; max-width: 340px;
-      background: var(--surface); border: 1px solid var(--line);
-      border-radius: 8px; padding: 6px 12px;
-      font-size: var(--t-xs); color: var(--ink-mute);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .hv-search svg { width: 14px; height: 14px; }
-    .hv-search kbd {
-      margin-left: auto; font-family: var(--sans); font-size: var(--t-3xs);
-      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 5px;
-      padding: 1px 6px; color: var(--ink-mute);
+    .sc-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .sc-dot.r { background: #F0625E; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.06); }
+    .sc-dot.y { background: #F5BE4F; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.06); }
+    .sc-dot.g { background: #5FC97F; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.06); }
+    .sc-bar-title {
+      flex: 1; text-align: center; font-size: var(--t-2xs); color: var(--ink-mute);
+      font-weight: 500; letter-spacing: .02em; margin-right: 56px;
     }
 
-    .hv-body { display: grid; grid-template-columns: 188px 1fr 244px; min-height: 430px; }
+    .sc-body { display: grid; grid-template-columns: 196px 1fr; min-height: 488px; }
 
-    .hv-side { border-right: 1px solid var(--line-soft); padding: 18px 0; background: #FDFCFA; }
-    .hv-side-item {
-      display: flex; align-items: center; gap: 11px;
-      padding: 9px 20px; font-size: var(--t-xs); color: var(--ink-mute); font-weight: 500;
+    /* sidebar */
+    .sc-side { border-right: 1px solid var(--line-soft); background: #FDFCFA; padding: 16px 0; display: flex; flex-direction: column; }
+    .sc-side-h {
+      padding: 4px 18px 12px; font-size: var(--t-3xs); font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--ink-mute);
     }
-    .hv-side-item.active { color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
-    .hv-side-item svg { width: 16px; height: 16px; }
+    .sc-nav-item {
+      display: flex; align-items: center; gap: 11px; padding: 9px 18px;
+      font-size: var(--t-xs); color: var(--ink-soft); font-weight: 500;
+      position: relative; cursor: default;
+    }
+    .sc-nav-item svg { width: 16px; height: 16px; color: var(--ink-mute); flex-shrink: 0; }
+    .sc-nav-item .ct {
+      margin-left: auto; font-size: var(--t-3xs); color: var(--ink-mute);
+      background: var(--bg-soft); border-radius: 999px; padding: 1px 8px; font-weight: 600;
+    }
+    .sc-nav-item.active { color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+    .sc-nav-item.active svg { color: var(--accent); }
+    .sc-nav-item.active .ct { background: #fff; color: var(--accent-deep); }
+    .sc-side-foot {
+      margin-top: auto; padding: 14px 18px 4px; border-top: 1px solid var(--line-soft);
+      display: flex; align-items: center; gap: 9px; font-size: var(--t-3xs); color: var(--ink-mute);
+    }
+    .sc-side-foot .dot { width: 6px; height: 6px; border-radius: 50%; background: #2EAD6E; box-shadow: 0 0 0 3px rgba(46,173,110,.16); flex-shrink: 0; }
 
-    .hv-main { padding: 28px 30px; text-align: left; }
-    .hv-tag {
-      display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: .04em;
-      color: var(--accent); background: var(--accent-soft); padding: 3px 10px; border-radius: 999px; margin-bottom: 14px;
+    /* main: capture inbox, live */
+    .sc-main { padding: 22px 26px 26px; text-align: left; display: flex; flex-direction: column; }
+    .sc-main-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+    .sc-main-head h3 { font-family: var(--serif); font-size: 1.32rem; font-weight: 700; color: var(--ink); }
+    .sc-main-head .sub { font-size: var(--t-2xs); color: var(--ink-mute); }
+    .sc-toolbar { display: flex; align-items: center; gap: 10px; margin: 14px 0 18px; }
+    .sc-input {
+      flex: 1; display: flex; align-items: center; gap: 9px;
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 10px;
+      padding: 9px 13px; font-size: var(--t-xs); color: var(--ink-mute);
     }
-    .hv-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--ink); margin-bottom: 9px; }
-    .hv-meta { font-size: var(--t-2xs); color: var(--ink-mute); display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-    .hv-text { font-size: var(--t-xs); line-height: 1.85; color: var(--ink-soft); }
-    .hv-text p { margin-bottom: 13px; }
-    .ent {
-      padding: 1px 6px; background: var(--accent-soft); border-radius: 4px;
-      color: var(--accent-deep); font-weight: 500; font-size: 0.78rem;
+    .sc-input svg { width: 15px; height: 15px; color: var(--ink-mute); flex-shrink: 0; }
+    .sc-caret { display: inline-block; width: 1.5px; height: 1em; background: var(--accent); margin-left: 1px; vertical-align: -2px; }
+    .sc-window.reveal-live .sc-caret { animation: scBlink 1.1s step-end infinite; }
+    @keyframes scBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+    .sc-paste {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px;
+      background: var(--accent); color: #fff; font-size: var(--t-xs); font-weight: 600;
+      padding: 9px 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(200,84,30,.22);
     }
-    .hv-cite { color: var(--accent); font-size: 0.66rem; vertical-align: super; font-weight: 600; }
+    .sc-paste svg { width: 14px; height: 14px; }
 
-    .hv-panel { border-left: 1px solid var(--line-soft); padding: 24px 20px; text-align: left; background: #FDFCFA; }
-    .hv-panel-h {
-      font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
-      color: var(--ink-mute); margin-bottom: 14px;
+    .sc-list { display: flex; flex-direction: column; gap: 9px; }
+    .sc-card {
+      display: flex; align-items: center; gap: 13px; padding: 12px 14px;
+      border: 1px solid var(--line); border-radius: 12px; background: var(--bg);
+      transition: border-color .3s, background .3s, box-shadow .3s, transform .3s var(--ease-out);
     }
-    .hv-ent-row {
-      display: flex; align-items: center; gap: 9px; padding: 8px 11px;
-      background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
-      font-size: 0.76rem; color: var(--ink-soft); margin-bottom: 8px;
+    /* Only hide-for-rise when JS is present to animate it back in (no-JS stays visible) */
+    .js .sc-window .sc-card { opacity: 0; transform: translateY(10px); }
+    .sc-window.reveal-live .sc-card { animation: scRise .6s var(--ease-out) forwards; }
+    .sc-window.reveal-live .sc-card:nth-child(1) { animation-delay: .15s; }
+    .sc-window.reveal-live .sc-card:nth-child(2) { animation-delay: .27s; }
+    .sc-window.reveal-live .sc-card:nth-child(3) { animation-delay: .39s; }
+    .sc-window.reveal-live .sc-card:nth-child(4) { animation-delay: .51s; }
+    .sc-window.reveal-live .sc-card:nth-child(5) { animation-delay: .63s; }
+    @keyframes scRise { to { opacity: 1; transform: translateY(0); } }
+    .sc-card.fresh { border-color: #F2D7C5; background: var(--surface); box-shadow: 0 4px 16px rgba(200,84,30,.07); }
+    .sc-ico {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
     }
-    .hv-ent-row .c { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .hv-graph { margin-top: 22px; }
-    .hv-graph svg { width: 100%; height: 130px; }
+    .sc-ico svg { width: 20px; height: 20px; color: #fff; }
+    .sc-meta { flex: 1; min-width: 0; }
+    .sc-meta .nm { font-size: var(--t-sm); color: var(--ink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sc-meta .src { font-size: var(--t-3xs); color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+    .sc-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+    .sc-tags .tg { font-size: 0.62rem; color: var(--accent-deep); background: var(--accent-soft); padding: 1px 7px; border-radius: 999px; font-weight: 500; }
+    .sc-state { font-size: var(--t-3xs); font-weight: 600; padding: 4px 11px; border-radius: 999px; flex-shrink: 0; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+    .sc-state.done { color: #2EAD6E; background: rgba(46,173,110,.12); }
+    .sc-state.run { color: var(--accent); background: var(--accent-soft); }
+    .sc-state.queue { color: var(--ink-mute); background: var(--bg-soft); }
+    .sc-state .spin {
+      width: 9px; height: 9px; border-radius: 50%;
+      border: 1.5px solid var(--accent-soft); border-top-color: var(--accent);
+    }
+    .sc-window.reveal-live .sc-state .spin { animation: scSpin .8s linear infinite; }
+    @keyframes scSpin { to { transform: rotate(360deg); } }
+
+    /* the "just generated" wiki peek toast over the analysing card */
+    .sc-peek {
+      margin-top: 16px; border: 1px solid var(--line); border-radius: 12px;
+      background: var(--surface); overflow: hidden; box-shadow: var(--shadow-sm);
+    }
+    .sc-peek-h {
+      display: flex; align-items: center; gap: 9px; padding: 10px 14px;
+      background: var(--accent-soft); font-size: var(--t-2xs); font-weight: 600; color: var(--accent-deep);
+    }
+    .sc-peek-h svg { width: 14px; height: 14px; color: var(--accent); }
+    .sc-peek-b { padding: 14px 16px; }
+    .sc-peek-b .wt { font-family: var(--serif); font-size: 1.02rem; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
+    .sc-peek-b .wl { font-size: var(--t-xs); line-height: 1.75; color: var(--ink-soft); }
+    .sc-peek-b .wl .ent { padding: 1px 6px; background: var(--accent-soft); border-radius: 4px; color: var(--accent-deep); font-weight: 500; font-size: .8rem; }
+    .sc-peek-b .wl .cite { color: var(--accent); font-size: .64rem; vertical-align: super; font-weight: 700; }
+    .sc-peek-src { margin-top: 11px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: var(--t-3xs); color: var(--ink-mute); }
+    .sc-peek-src b { color: var(--ink-soft); }
 
     /* ===== Strip ===== */
     .strip {
@@ -690,12 +781,22 @@
       .hb-plane { opacity: 1; }
       .hb-net { transform: none; transition: none; }
       .btn-primary::after { display: none; }
+      .js .sc-window .sc-card { opacity: 1; transform: none; animation: none; }
+      .sc-caret, .sc-state .spin { animation: none; }
+      .sc-window:hover { transform: none; }
     }
 
     /* ===== Responsive ===== */
     @media (max-width: 1024px) {
-      .hv-body { grid-template-columns: 1fr; }
-      .hv-side, .hv-panel { display: none; }
+      .sc-body { grid-template-columns: 1fr; }
+      .sc-side {
+        flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px;
+        border-right: none; border-bottom: 1px solid var(--line-soft); padding: 12px 16px;
+      }
+      .sc-side-h, .sc-side-foot { display: none; }
+      .sc-nav-item { padding: 7px 12px; border-radius: 999px; }
+      .sc-nav-item.active { box-shadow: none; border-radius: 999px; }
+      .sc-nav-item:not(.active) .ct { display: none; }
       .feat-row, .feat-row.reverse { grid-template-columns: 1fr; gap: 36px; }
       .feat-row.reverse .feat-text, .feat-row.reverse .feat-art { order: initial; }
       .feat-text { order: 1 !important; }
@@ -717,9 +818,25 @@
       .footer-links { flex-wrap: wrap; justify-content: center; }
       .hero-buttons { flex-direction: column; }
       .dl-buttons { flex-direction: column; align-items: stretch; }
+      .hero { padding-bottom: 48px; }
+      .sc-main { padding: 18px 16px 20px; }
+      .sc-body { min-height: 0; }
+      .sc-tags { display: none; }
     }
     @media (max-width: 600px) {
       .art-body { padding: 16px; }
+      .sc-window { border-radius: 14px; }
+      .sc-main-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .sc-toolbar { flex-wrap: wrap; }
+      .sc-input { flex-basis: 100%; }
+      .sc-card { padding: 10px 11px; gap: 10px; }
+      .sc-ico { width: 32px; height: 32px; }
+      .sc-ico svg { width: 17px; height: 17px; }
+      .sc-meta .nm { font-size: 0.82rem; }
+      .sc-state { font-size: 0.62rem; padding: 3px 8px; }
+      .sc-peek-b .wt { font-size: 0.96rem; }
+      .sc-peek-b .wl { font-size: 0.78rem; }
+      .sc-cap h2 { font-size: 1.7rem; }
       .cap-item { padding: 10px 11px; gap: 10px; }
       .cap-ico { width: 30px; height: 30px; }
       .cap-ico svg { width: 16px; height: 16px; }
@@ -752,6 +869,7 @@
         知脉 <span class="en">ZhiMai</span>
       </a>
       <ul class="nav-links">
+        <li><a href="#showcase">产品</a></li>
         <li><a href="#how">怎么工作</a></li>
         <li><a href="#features">核心能力</a></li>
         <li><a href="#author">关于作者</a></li>
@@ -826,75 +944,120 @@
       </div>
       <p class="hero-micro reveal rd3">全程在你自己电脑上，数据不出门</p>
       <p class="hero-note reveal rd3">首次打开请右键点图标 → 打开 · 免费使用 · 自带 AI key</p>
+    </div>
+  </section>
 
-      <!-- App preview -->
-      <div class="hero-visual reveal rd2">
-        <div class="hv-bar">
-          <span class="hv-dot r"></span><span class="hv-dot y"></span><span class="hv-dot g"></span>
-          <div class="hv-search">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.7 10.3a6 6 0 10-1.4 1.4l.1.1 3.8 3.8a1 1 0 001.4-1.4l-3.8-3.8a1 1 0 00-.1-.1zM11 6.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
-            用大白话问点什么…
-            <kbd>⌘K</kbd>
-          </div>
+  <!-- ===== Product showcase ===== -->
+  <section class="showcase" id="showcase">
+    <div class="container">
+      <div class="sc-cap reveal">
+        <span class="eyebrow">这就是知脉</span>
+        <h2>粘一个链接进去，<br>剩下的它自己干。</h2>
+        <p>采集箱里，每条新进来的料都会自动排队、读完、抽实体、长成词条——你不用点任何「开始处理」。</p>
+      </div>
+
+      <!-- macOS-style app window -->
+      <div class="sc-window reveal rd1" id="scWindow">
+        <div class="sc-bar">
+          <span class="sc-dot r"></span><span class="sc-dot y"></span><span class="sc-dot g"></span>
+          <span class="sc-bar-title">知脉 ZhiMai — 采集箱</span>
         </div>
-        <div class="hv-body">
-          <div class="hv-side">
-            <div class="hv-side-item">
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v9A1.5 1.5 0 0112.5 14h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
-              采集箱
+        <div class="sc-body">
+          <!-- sidebar -->
+          <aside class="sc-side">
+            <div class="sc-side-h">工作区</div>
+            <div class="sc-nav-item active">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v9A1.5 1.5 0 0112.5 14h-9A1.5 1.5 0 012 12.5v-9zM4 6h8V5H4v1zm0 2.5h6v-1H4v1z"/></svg>
+              采集箱 <span class="ct">5</span>
             </div>
-            <div class="hv-side-item active">
+            <div class="sc-nav-item">
               <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3zm2 1.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zM4 7.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5A.5.5 0 014 7.5z"/></svg>
-              自动百科
+              自动百科 <span class="ct">38</span>
             </div>
-            <div class="hv-side-item">
+            <div class="sc-nav-item">
               <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 5a3 3 0 116 0 3 3 0 01-6 0zM2 13a4 4 0 018 0v1H2v-1z"/></svg>
-              实体
+              实体 <span class="ct">64</span>
             </div>
-            <div class="hv-side-item">
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="5" r="2"/><circle cx="8" cy="12" r="2"/></svg>
+            <div class="sc-nav-item">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="5" r="2"/><circle cx="8" cy="12" r="2"/><path d="M5 5l6 0M5 5l3 7M11 5l-3 7" stroke="currentColor" stroke-width="1" opacity=".5"/></svg>
               知识图谱
             </div>
-            <div class="hv-side-item">
+            <div class="sc-nav-item">
               <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.8 4.6L14.5 6l-3.5 3 1.2 5L8 11.5 3.8 14l1.2-5L1.5 6l4.7-.4L8 1z"/></svg>
               深度研究
             </div>
-          </div>
+            <div class="sc-side-foot"><span class="dot"></span>本地运行 · 数据不出门</div>
+          </aside>
 
-          <div class="hv-main">
-            <span class="hv-tag">自动维护 · 2 小时前更新</span>
-            <div class="hv-title">2026 大模型定价格局</div>
-            <div class="hv-meta">
-              <span>来源：12 条采集</span>
-              <span>实体 8 个</span>
-              <span>引用可溯源</span>
+          <!-- main: live capture inbox -->
+          <div class="sc-main">
+            <div class="sc-main-head">
+              <h3>采集箱</h3>
+              <span class="sub">进来就自动分析 · 无需手动开始</span>
             </div>
-            <div class="hv-text">
-              <p>2026 Q1，大模型定价继续往下走。<span class="ent">OpenAI</span> 把 GPT 系列输入价格下调，<span class="ent">Anthropic</span> 给 <span class="ent">Claude</span> 上了用量计费和提示词缓存折扣。</p>
-              <p><span class="ent">DeepSeek</span> 用更低的单价持续给西方厂商施压，买方开始普遍走多供应商策略来压低每次查询的成本。</p>
-              <p>核心趋势：推理成本三年里掉了两个数量级，让一批原本算不过账的 AI 产品第一次跑通了商业模型。</p>
-            </div>
-          </div>
 
-          <div class="hv-panel">
-            <div class="hv-panel-h">识别到的实体</div>
-            <div class="hv-ent-row"><span class="c" style="background:#C8541E"></span>OpenAI · 公司</div>
-            <div class="hv-ent-row"><span class="c" style="background:#3B82F6"></span>Anthropic · 公司</div>
-            <div class="hv-ent-row"><span class="c" style="background:#2EAD6E"></span>DeepSeek · 公司</div>
-            <div class="hv-ent-row"><span class="c" style="background:#A855F7"></span>Claude · 模型</div>
-            <div class="hv-graph">
-              <div class="hv-panel-h" style="margin-top:8px">知识图谱</div>
-              <svg viewBox="0 0 220 130" aria-hidden="true">
-                <line x1="110" y1="28" x2="46" y2="74" stroke="#E9E4D9" stroke-width="1.5"/>
-                <line x1="110" y1="28" x2="174" y2="74" stroke="#E9E4D9" stroke-width="1.5"/>
-                <line x1="46" y1="74" x2="110" y2="112" stroke="#E9E4D9" stroke-width="1.5"/>
-                <line x1="174" y1="74" x2="110" y2="112" stroke="#E9E4D9" stroke-width="1.5"/>
-                <line x1="46" y1="74" x2="174" y2="74" stroke="#E9E4D9" stroke-width="1"/>
-                <circle cx="110" cy="28" r="8" fill="#C8541E"/>
-                <circle cx="46" cy="74" r="6" fill="#3B82F6"/>
-                <circle cx="174" cy="74" r="6" fill="#2EAD6E"/>
-                <circle cx="110" cy="112" r="7" fill="#A855F7"/>
-              </svg>
+            <div class="sc-toolbar">
+              <div class="sc-input">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.5 1a.5.5 0 000 1H8a3 3 0 010 6H6.5a.5.5 0 000 1H8a4 4 0 000-8H6.5zM2 5a4 4 0 014-4h1.5a.5.5 0 010 1H6a3 3 0 100 6h1.5a.5.5 0 010 1H6a4 4 0 01-4-4z"/></svg>
+                粘贴 YouTube / 网页链接，或拖入 PDF<span class="sc-caret"></span>
+              </div>
+              <span class="sc-paste">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2a1 1 0 011 1v3h3a1 1 0 110 2H9v3a1 1 0 11-2 0V8H4a1 1 0 010-2h3V3a1 1 0 011-1z"/></svg>
+                采集
+              </span>
+            </div>
+
+            <div class="sc-list">
+              <div class="sc-card">
+                <div class="sc-ico" style="background:#F0625E"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 12s0-3.9-.5-5.6a2.9 2.9 0 00-2-2C18.7 4 12 4 12 4s-6.7 0-8.5.4a2.9 2.9 0 00-2 2C1 8.1 1 12 1 12s0 3.9.5 5.6a2.9 2.9 0 002 2C5.3 20 12 20 12 20s6.7 0 8.5-.4a2.9 2.9 0 002-2C23 15.9 23 12 23 12zM10 15.5v-7l6 3.5-6 3.5z"/></svg></div>
+                <div class="sc-meta">
+                  <div class="nm">Andrej Karpathy 谈 LLM 推理成本</div>
+                  <div class="src">YouTube · 字幕已抓取 · 38 分钟</div>
+                  <div class="sc-tags"><span class="tg"># 推理成本</span><span class="tg"># 量化</span><span class="tg"># 开源模型</span></div>
+                </div>
+                <span class="sc-state done">已分析</span>
+              </div>
+
+              <div class="sc-card">
+                <div class="sc-ico" style="background:#3B82F6"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.9 12a5 5 0 015-5h3v2h-3a3 3 0 100 6h3v2h-3a5 5 0 01-5-5zm6 1h4v-2h-4v2zm5.1-6h-3v2h3a3 3 0 010 6h-3v2h3a5 5 0 100-10z"/></svg></div>
+                <div class="sc-meta">
+                  <div class="nm">A16Z：本地优先 AI 应用的机会</div>
+                  <div class="src">a16z.com/local-first-ai · 正文已抓取</div>
+                  <div class="sc-tags"><span class="tg"># 本地优先</span><span class="tg"># 隐私</span></div>
+                </div>
+                <span class="sc-state done">已分析</span>
+              </div>
+
+              <div class="sc-card fresh">
+                <div class="sc-ico" style="background:#C8541E"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 2a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5z"/></svg></div>
+                <div class="sc-meta">
+                  <div class="nm">2026 LLM 定价白皮书.pdf</div>
+                  <div class="src">本地文件 · 28 页 · 抽取实体中…</div>
+                </div>
+                <span class="sc-state run"><span class="spin"></span>分析中</span>
+              </div>
+
+              <div class="sc-card">
+                <div class="sc-ico" style="background:#2EAD6E"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.8 16.3l-.2 3c.4 0 .6-.2.8-.4l1.9-1.8 3.9 2.9c.7.4 1.3.2 1.5-.7l2.7-12.6c.3-1.1-.4-1.6-1.1-1.3L3.4 9.9c-1.1.4-1 1-.2 1.3l4.3 1.3 9.9-6.2c.5-.3.9-.1.5.2l-8 7.2z"/></svg></div>
+                <div class="sc-meta">
+                  <div class="nm">AI 前沿日报 · Telegram 频道</div>
+                  <div class="src">@ai_daily · 新增 4 条 · 排队中</div>
+                </div>
+                <span class="sc-state queue">待处理</span>
+              </div>
+            </div>
+
+            <!-- the entry that just got written from the analysed sources -->
+            <div class="sc-peek">
+              <div class="sc-peek-h">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.8 4.6L14.5 6l-3.5 3 1.2 5L8 11.5 3.8 14l1.2-5L1.5 6l4.7-.4L8 1z"/></svg>
+                刚刚自动写好一条词条
+              </div>
+              <div class="sc-peek-b">
+                <div class="wt">大模型推理成本</div>
+                <div class="wl">三年里，单位 token 的推理成本下降了约两个数量级。<span class="ent">量化</span>与<span class="ent">蒸馏</span>让开源模型把单价压到闭源的几分之一<span class="cite">[1]</span>，但在长上下文稳定性上仍有差距<span class="cite">[2]</span>。</div>
+                <div class="sc-peek-src">来源：<b>Karpathy YouTube 访谈</b> · <b>2026 LLM 定价白皮书</b> · 引用可点回原文</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1302,6 +1465,9 @@
 
   <script>
     (function () {
+      // Mark JS-on so progressive enhancements (e.g. showcase card rise) are safe to
+      // hide-then-animate; with JS off the cards simply stay visible.
+      document.documentElement.classList.add('js');
       var nav = document.getElementById('nav');
       var scrolled = false;
       window.addEventListener('scroll', function () {
@@ -1341,14 +1507,37 @@
         }, { passive: true });
       }
 
+      // Showcase: once the window scrolls in, let cards rise + caret blink (CSS via
+      // .reveal-live), then flip the "分析中" card to "已分析" so the scene feels alive.
+      // Fully skipped under reduced-motion — the static state already reads correctly.
+      var scWin = document.getElementById('scWindow');
+      function animateShowcase() {
+        if (!scWin || reduceMotion) return;
+        scWin.classList.add('reveal-live');
+        var runCard = scWin.querySelector('.sc-card.fresh');
+        if (!runCard) return;
+        setTimeout(function () {
+          var state = runCard.querySelector('.sc-state');
+          if (state) { state.className = 'sc-state done'; state.textContent = '已分析'; }
+          runCard.classList.remove('fresh');
+          var src = runCard.querySelector('.src');
+          if (src) { src.textContent = '本地文件 · 28 页 · 实体已抽取'; }
+        }, 2600);
+      }
+
       var reveals = document.querySelectorAll('.reveal');
       if (!('IntersectionObserver' in window)) {
         reveals.forEach(function (el) { el.classList.add('visible'); });
+        animateShowcase();
         return;
       }
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            if (e.target === scWin) { animateShowcase(); }
+            obs.unobserve(e.target);
+          }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
       reveals.forEach(function (el) { obs.observe(el); });
