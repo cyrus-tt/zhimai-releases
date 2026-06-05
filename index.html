@@ -731,6 +731,64 @@
     .author-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
     .author-link svg { width: 16px; height: 16px; }
 
+    /* ===== FAQ ===== */
+    .faq { background: var(--bg-soft); }
+    .faq-wrap { max-width: 760px; margin: 0 auto; }
+    .faq-list { margin-top: var(--s-8); display: flex; flex-direction: column; }
+    .faq-item { border-top: 1px solid var(--line); }
+    .faq-item:last-child { border-bottom: 1px solid var(--line); }
+    .faq-item summary {
+      list-style: none; cursor: pointer; position: relative;
+      padding: 24px 52px 24px 0;
+      font-family: var(--serif); font-size: var(--t-lg); font-weight: 700;
+      color: var(--ink); line-height: 1.45;
+      transition: color .25s var(--ease-soft);
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--accent); }
+    /* the +/× toggle */
+    .faq-item summary::after {
+      content: ''; position: absolute; right: 4px; top: 50%;
+      width: 18px; height: 18px; margin-top: -9px;
+      background:
+        linear-gradient(var(--accent), var(--accent)) center/100% 2px no-repeat,
+        linear-gradient(var(--accent), var(--accent)) center/2px 100% no-repeat;
+      transition: transform .35s var(--ease-out);
+    }
+    .faq-item[open] summary::after { transform: rotate(135deg); }
+    .faq-item[open] summary { color: var(--accent); }
+    .faq-a {
+      padding: 0 56px 0 0;
+      font-size: var(--t-base); color: var(--ink-soft); line-height: 1.8;
+    }
+    .faq-a p { margin-bottom: 14px; }
+    .faq-a p:last-child { margin-bottom: 0; }
+    .faq-a b { color: var(--ink); font-weight: 600; }
+    .faq-a a { font-weight: 600; }
+    .faq-a .kbd {
+      font-family: var(--sans); font-size: var(--t-3xs); font-weight: 600;
+      color: var(--accent-deep); background: var(--accent-soft);
+      border: 1px solid #F2D7C5; border-radius: 6px; padding: 2px 7px;
+      white-space: nowrap;
+    }
+    /* Smooth open: fade the inner wrapper, keep <details> semantics intact */
+    .faq-a-inner { padding-bottom: 26px; }
+    .faq-item[open] .faq-a-inner { animation: faqReveal .4s var(--ease-out); }
+    @keyframes faqReveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .faq-foot {
+      margin-top: var(--s-7); text-align: center;
+      font-size: var(--t-sm); color: var(--ink-mute);
+    }
+    .faq-foot a { font-weight: 600; }
+    @media (prefers-reduced-motion: reduce) {
+      .faq-item[open] .faq-a-inner { animation: none; }
+      .faq-item summary::after { transition: none; }
+    }
+    @media (max-width: 600px) {
+      .faq-item summary { font-size: var(--t-md); padding: 20px 38px 20px 0; }
+      .faq-a { padding-right: 0; }
+    }
+
     /* ===== Download ===== */
     .download { text-align: center; }
     .download h2 { font-size: var(--d-dl); font-weight: 800; margin-bottom: 18px; }
@@ -873,6 +931,7 @@
         <li><a href="#how">怎么工作</a></li>
         <li><a href="#features">核心能力</a></li>
         <li><a href="#author">关于作者</a></li>
+        <li><a href="#faq">常见问题</a></li>
         <li><a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub</a></li>
       </ul>
       <a href="#download" class="nav-cta">
@@ -1416,6 +1475,68 @@
     </div>
   </section>
 
+  <!-- ===== FAQ ===== -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="faq-wrap">
+        <div class="sec-head center reveal" style="margin-bottom:0">
+          <span class="eyebrow">下载前，先答疑</span>
+          <h2>点下载之前，<br>你大概想先问清楚这几件事。</h2>
+        </div>
+
+        <div class="faq-list reveal rd1">
+          <details class="faq-item">
+            <summary>要钱吗？</summary>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>软件本身<b>免费</b>。我是独立开发者，自己每天在用，没打算靠它收订阅费。</p>
+              <p>唯一的花费是 AI——知脉不内置模型，用的是<b>你自己的 LLM API Key</b>（Claude / OpenAI / DeepSeek / Azure 任选其一）。读文章、写报告这些 AI 动作，按各家平台的用量计费，钱直接付给模型厂商，不经我手。DeepSeek 这类便宜的，重度用一个月通常也就几块到几十块。</p>
+            </div></div>
+          </details>
+
+          <details class="faq-item">
+            <summary>我的数据安全吗？存在哪？</summary>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>数据<b>全在你自己电脑上</b>。知脉是 local-first 的——采集进来的内容、生成的词条、整个知识库，都是你硬盘上一堆标准 markdown 文件（默认放在 <span class="kbd">~/Documents/ZhiMai-Vault</span>），用 Obsidian 能直接打开。我没有服务器，也收不到你的任何数据。</p>
+              <p>唯一会"出门"的时刻：当你主动触发 AI 分析或写报告时，<b>这一次需要的那部分内容</b>会发给你自己配的那家 LLM。发给谁、发什么，都是你点的那一下决定的，没有后台偷偷上传。</p>
+            </div></div>
+          </details>
+
+          <details class="faq-item">
+            <summary>打开时提示"无法验证开发者"怎么办？</summary>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>正常，别慌。安装包<b>还没买苹果签名证书</b>（一个独立开发者一年好几百，等用的人多点再说），所以 macOS 首次会拦一下。</p>
+              <p>解决很简单：<b>右键点应用图标 → 选「打开」</b>，弹窗里再确认一次「打开」，之后就跟普通 app 一样双击用了，只需要做这一次。介意的话，源码全在 GitHub 上公开，可以先翻一翻。</p>
+            </div></div>
+          </details>
+
+          <details class="faq-item">
+            <summary>需要联网吗？要准备什么？</summary>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>采集、检索、看库这些都在本地。但只要用到 AI（自动分析、深度研究、智能搜索），就<b>需要联网</b>去调你选的那个大模型——这一步绕不开。</p>
+              <p>开始前要准备一样东西：<b>一个 LLM API Key</b>。去 Claude / OpenAI / DeepSeek 任意一家官网注册、充点钱、生成一个 key，第一次打开知脉时填进设置里就行。不会配的话，GitHub 上有一步步的图文说明。</p>
+            </div></div>
+          </details>
+
+          <details class="faq-item">
+            <summary>Windows 版什么时候有？</summary>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>正在路上，先做的 Mac（Apple Silicon）。技术栈是跨平台的（Tauri + Rust），Windows 版的打包和测试在做了，好了第一时间放上来。想催的话，<a href="mailto:cyrusttyj2@gmail.com">发我封邮件</a>，人多我就排前面。</p>
+            </div></div>
+          </details>
+
+          <details class="faq-item">
+            <summary>哪天不想用了，数据带得走吗？</summary>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>带得走，<b>原封不动</b>。知识库就是一个普通文件夹，里面全是标准 markdown，没有私有数据库、没有加密锁定。卸载知脉，那个文件夹还在，Obsidian、VS Code、甚至记事本都能继续读。不绑架你的数据，是这东西设计时的底线。</p>
+            </div></div>
+          </details>
+        </div>
+
+        <p class="faq-foot reveal rd2">还有别的疑问？<a href="mailto:cyrusttyj2@gmail.com">直接发邮件问我</a>，或者去 <a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub</a> 提 issue。</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== Download ===== -->
   <section class="download" id="download">
     <div class="container">
@@ -1542,6 +1663,100 @@
       }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
       reveals.forEach(function (el) { obs.observe(el); });
     })();
+  </script>
+
+  <!-- ── Structured data: SoftwareApplication + FAQ for search rich results ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "知脉 ZhiMai",
+        "alternateName": "ZhiMai",
+        "applicationCategory": "ProductivityApplication",
+        "applicationSubCategory": "知识管理 / 研究工具",
+        "operatingSystem": "macOS 11+ (Apple Silicon)",
+        "softwareVersion": "0.9.0",
+        "url": "https://zhimai.cyrustyj.xyz/",
+        "downloadUrl": "https://github.com/cyrus-tt/zhimai-releases/releases/download/v0.9.0/ZhiMai_0.9.0_aarch64.dmg",
+        "screenshot": "https://zhimai.cyrustyj.xyz/og.png",
+        "inLanguage": "zh-CN",
+        "description": "本地优先的私人研究院。粘贴 YouTube / 网页链接或丢入 PDF，AI 自动读完、归档、连上你已有的知识，还能按主题写出带出处的研究报告。数据全在你自己的电脑上，不上传服务器。",
+        "featureList": [
+          "全源采集：YouTube 字幕 / 网页正文 / PDF / Telegram / RSS",
+          "采集后自动 LLM 分析、抽实体、打标签",
+          "自动百科：生成并维护带来源出处的结构化词条",
+          "知识图谱：实体关系、社区检测、知识盲区洞察",
+          "深度研究：拆子问题、多轮检索、写带引用的研究报告",
+          "数据以标准 Markdown 本地存储，可用 Obsidian 打开"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Cyrus",
+          "url": "https://cyrustyj.xyz"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "知脉要钱吗？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "软件本身免费，由独立开发者维护。唯一花费是 AI——知脉使用你自己的 LLM API Key（Claude / OpenAI / DeepSeek / Azure 任选），AI 用量按各家平台计费，费用直接付给模型厂商。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "我的数据安全吗？存在哪里？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "数据全部存在你自己电脑上。知脉是 local-first 的，采集内容、词条和整个知识库都是你硬盘上的标准 Markdown 文件，默认放在 ~/Documents/ZhiMai-Vault，不上传任何服务器。只有当你主动触发 AI 分析或写报告时，这一次需要的内容才会发给你自己配置的 LLM 厂商。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "打开时提示「无法验证开发者」怎么办？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "安装包暂未购买苹果签名证书，macOS 首次打开会拦截。解决方法：右键点应用图标，选「打开」，在弹窗中再次确认「打开」即可，只需操作一次，之后正常双击使用。源码在 GitHub 公开可查。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "需要联网吗？要准备什么前置条件？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "采集、检索、浏览知识库在本地完成；但使用 AI 功能（自动分析、深度研究、智能搜索）需要联网调用大模型。开始前需准备一个 LLM API Key——在 Claude / OpenAI / DeepSeek 任一家官网注册并生成 key，首次打开时填入设置即可。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Windows 版什么时候有？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "正在开发中，目前先支持 macOS（Apple Silicon）。技术栈基于跨平台的 Tauri + Rust，Windows 版的打包与测试在进行中，完成后会第一时间发布。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "不想用了，数据带得走吗？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "可以，数据原封不动。知识库就是一个普通文件夹，里面全是标准 Markdown，没有私有数据库或加密锁定。卸载知脉后文件夹依旧存在，Obsidian、VS Code 等任何编辑器都能继续打开。"
+            }
+          }
+        ]
+      }
+    ]
+  }
   </script>
 
 </body>
