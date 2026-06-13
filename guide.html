@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使用手册 · 知脉 ZhiMai — User Guide</title>
+  <meta name="description" content="知脉 ZhiMai v0.9.1 双语使用手册：安装、首次配置、采集 / 探索 / 研究报告三大功能区、快捷键、数据隐私与故障排查。Bilingual user guide.">
+  <link rel="canonical" href="https://zhimai.cyrustyj.xyz/guide.html">
+
+  <meta name="theme-color" content="#FCFBF8" media="(prefers-color-scheme: light)">
+  <meta name="color-scheme" content="light">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="知脉 ZhiMai">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:url" content="https://zhimai.cyrustyj.xyz/guide.html">
+  <meta property="og:title" content="使用手册 · 知脉 ZhiMai — User Guide">
+  <meta property="og:description" content="知脉 ZhiMai v0.9.1 双语使用手册：安装、配置、三大功能区、快捷键、隐私与故障排查。">
+  <meta property="og:image" content="https://zhimai.cyrustyj.xyz/og.png">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FCFBF8; --bg-soft: #F4F1EA; --surface: #FFFFFF;
+      --ink: #1A1714; --ink-soft: #4A453E; --ink-mute: #8B847A;
+      --line: #E9E4D9; --line-soft: #F0ECE3;
+      --accent: #C8541E; --accent-soft: #FBEDE4; --accent-deep: #A63F11;
+      --focus: rgba(200,84,30,0.45);
+      --shadow-sm: 0 1px 2px rgba(40,30,20,0.04), 0 4px 16px rgba(40,30,20,0.04);
+      --shadow-md: 0 4px 12px rgba(40,30,20,0.05), 0 18px 50px rgba(40,30,20,0.07);
+      --serif: 'Noto Serif SC', Georgia, serif;
+      --sans: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --t-2xs: 0.75rem; --t-xs: 0.833rem; --t-sm: 0.9rem; --t-base: 1rem; --t-md: 1.125rem;
+      --eyebrow: 0.78rem;
+      --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 18px;
+      --ease-out: cubic-bezier(.16,.84,.30,1);
+      --ease-soft: cubic-bezier(.22,.61,.36,1);
+    }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: 88px; }
+    body {
+      font-family: var(--sans); background: var(--bg); color: var(--ink-soft);
+      line-height: 1.75; font-weight: 400; font-size: var(--t-base);
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility; overflow-x: hidden; position: relative;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      opacity: 0.022; mix-blend-mode: multiply;
+    }
+    nav, main, footer { position: relative; z-index: 2; }
+
+    h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); font-weight: 700; letter-spacing: -0.012em; line-height: 1.3; text-wrap: balance; }
+    p { text-wrap: pretty; }
+    a { color: var(--accent); text-decoration: none; transition: color .2s var(--ease-soft); }
+    a:hover { color: var(--accent-deep); }
+    a:focus-visible, button:focus-visible {
+      outline: none; box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--focus); border-radius: var(--r-sm);
+    }
+    b, strong { color: var(--ink); font-weight: 600; }
+
+    .container { max-width: 880px; margin: 0 auto; padding: 0 var(--s-6); }
+
+    /* ===== Nav (matches homepage) ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 0;
+      background: rgba(252, 251, 248, 0.78);
+      backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1120px; margin: 0 auto; padding: 0 var(--s-6); }
+    .nav-logo { display: flex; align-items: center; gap: 11px; font-family: var(--serif); font-weight: 700; font-size: 1.18rem; color: var(--ink); }
+    .nav-logo .en { font-family: var(--sans); font-weight: 500; font-size: .82rem; color: var(--ink-mute); letter-spacing: .12em; }
+    .nav-logo svg { width: 30px; height: 30px; transition: transform .4s var(--ease-out); }
+    .nav-logo:hover svg { transform: rotate(-8deg) scale(1.05); }
+    .nav-links { display: flex; gap: 30px; list-style: none; }
+    .nav-links a { color: var(--ink-soft); font-size: var(--t-sm); font-weight: 500; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px;
+      background: var(--ink); color: #fff; font-weight: 500; font-size: var(--t-sm);
+      border-radius: 999px; transition: transform .2s var(--ease-out), background .25s;
+    }
+    .nav-cta:hover { background: var(--accent); transform: translateY(-1px); color: #fff; }
+    .nav-cta svg { width: 15px; height: 15px; }
+
+    /* ===== Header ===== */
+    .guide-header { padding: 150px 0 var(--s-7); border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      font-family: var(--sans); font-size: var(--eyebrow); font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-5);
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before { content: ''; width: 22px; height: 1px; background: var(--accent); opacity: .55; }
+    .guide-header h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); margin-bottom: var(--s-4); }
+    .guide-header .sub { font-size: var(--t-md); color: var(--ink-soft); max-width: 60ch; }
+    .header-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); flex-wrap: wrap; margin-top: var(--s-6); }
+
+    /* Lang toggle */
+    .lang-toggle { display: inline-flex; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+    .lang-toggle button {
+      font-family: var(--sans); font-size: var(--t-sm); font-weight: 600; color: var(--ink-mute);
+      background: transparent; border: none; cursor: pointer; padding: 7px 18px; border-radius: 999px;
+      transition: background .2s, color .2s;
+    }
+    .lang-toggle button.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow-sm); }
+
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 10px; padding: 13px 26px;
+      background: var(--accent); color: #fff; font-weight: 600; font-size: var(--t-sm);
+      border-radius: 12px; box-shadow: 0 10px 28px rgba(200,84,30,0.24);
+      transition: transform .2s var(--ease-out), background .2s;
+    }
+    .dl-btn:hover { transform: translateY(-2px); background: var(--accent-deep); color: #fff; }
+    .dl-btn svg { width: 17px; height: 17px; }
+
+    /* ===== Body / prose ===== */
+    main { padding: var(--s-8) 0 var(--s-9, 96px); }
+
+    /* TOC */
+    .toc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s-5) var(--s-6); margin-bottom: var(--s-8); box-shadow: var(--shadow-sm); }
+    .toc-title { font-family: var(--sans); font-size: var(--t-2xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: var(--s-3); }
+    .toc ol { list-style: none; counter-reset: toc; columns: 2; column-gap: var(--s-7); }
+    .toc li { counter-increment: toc; padding: 5px 0; break-inside: avoid; }
+    .toc li::before { content: counter(toc) "."; color: var(--accent); font-weight: 700; margin-right: 8px; font-variant-numeric: tabular-nums; }
+    .toc a { color: var(--ink-soft); font-size: var(--t-sm); }
+    .toc a:hover { color: var(--accent); }
+
+    section.gs { padding: var(--s-7) 0; border-top: 1px solid var(--line-soft); }
+    section.gs:first-of-type { border-top: none; padding-top: 0; }
+    section.gs > h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: var(--s-5);
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    section.gs > h2 .num { font-family: var(--sans); font-size: 1rem; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: var(--r-sm); padding: 3px 11px; }
+    section.gs h3 { font-size: 1.2rem; margin: var(--s-6) 0 var(--s-3); color: var(--ink); }
+    section.gs p { margin: var(--s-3) 0; }
+    section.gs ul, section.gs ol { margin: var(--s-3) 0 var(--s-3) 0; padding-left: 1.3em; }
+    section.gs li { margin: 7px 0; }
+    section.gs ol.steps { counter-reset: step; list-style: none; padding-left: 0; }
+    section.gs ol.steps > li {
+      counter-increment: step; position: relative; padding-left: 44px; margin: var(--s-4) 0; min-height: 30px;
+    }
+    section.gs ol.steps > li::before {
+      content: counter(step); position: absolute; left: 0; top: 0;
+      width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #fff;
+      font-family: var(--sans); font-weight: 700; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Callout */
+    .note {
+      display: flex; gap: 13px; padding: var(--s-4) var(--s-5); margin: var(--s-5) 0;
+      background: var(--accent-soft); border-radius: var(--r-md); border: 1px solid #F3D9C7;
+      font-size: var(--t-sm); color: var(--ink-soft);
+    }
+    .note svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+    .note.plain { background: var(--bg-soft); border-color: var(--line); }
+    .note.plain svg { color: var(--ink-mute); }
+
+    /* Tables */
+    .tbl-wrap { overflow-x: auto; margin: var(--s-5) 0; border: 1px solid var(--line); border-radius: var(--r-md); }
+    table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+    th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    th { background: var(--bg-soft); font-family: var(--sans); font-weight: 700; color: var(--ink); white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    td b { color: var(--ink); }
+
+    kbd {
+      font-family: var(--sans); font-size: .8rem; font-weight: 600; color: var(--ink);
+      background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px;
+      border-radius: 6px; padding: 2px 8px; white-space: nowrap;
+    }
+
+    /* Lang visibility */
+    .lang-en { display: none; }
+    body.show-en .lang-zh { display: none; }
+    body.show-en .lang-en { display: block; }
+    span.lang-en, b.lang-en { display: none; }
+    body.show-en span.lang-zh, body.show-en b.lang-zh { display: none; }
+    body.show-en span.lang-en, body.show-en b.lang-en { display: inline; }
+
+    /* Footer */
+    footer { padding: 48px 0 40px; border-top: 1px solid var(--line); background: var(--bg); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; max-width: 1120px; margin: 0 auto; padding: 0 var(--s-6); }
+    .footer-brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+    .footer-brand .en { font-family: var(--sans); font-size: .78rem; font-weight: 500; color: var(--ink-mute); letter-spacing: .1em; }
+    .footer-meta { font-size: var(--t-2xs); color: var(--ink-mute); margin-top: 5px; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: var(--t-xs); color: var(--ink-soft); }
+    .footer-links a:hover { color: var(--accent); }
+
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .toc ol { columns: 1; }
+      .guide-header { padding-top: 120px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body class="show-zh">
+
+  <!-- ===== Nav ===== -->
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="知脉 ZhiMai 首页">
+        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="9" fill="#C8541E"/>
+          <circle cx="11" cy="11" r="2.4" fill="#FCFBF8"/>
+          <circle cx="22" cy="9" r="1.8" fill="#FCFBF8"/>
+          <circle cx="21" cy="21" r="2.2" fill="#FCFBF8"/>
+          <circle cx="10" cy="22" r="1.7" fill="#FCFBF8"/>
+          <path d="M11 11L22 9M11 11L21 21M22 9L21 21M11 11L10 22M21 21L10 22" stroke="#FCFBF8" stroke-width="1" opacity="0.55"/>
+        </svg>
+        知脉 <span class="en">ZhiMai</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/#showcase">产品</a></li>
+        <li><a href="/#features">核心能力</a></li>
+        <li><a href="/#faq">常见问题</a></li>
+        <li><a href="/guide.html">使用手册</a></li>
+      </ul>
+      <a href="/#download" class="nav-cta">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1 1 0 011 1v7.6l2.3-2.3a1 1 0 111.4 1.4l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L9 11.6V4a1 1 0 011-1z"/><path d="M3 15a1 1 0 011 1v1h12v-1a1 1 0 112 0v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1a1 1 0 011-1z"/></svg>
+        下载
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== Header ===== -->
+  <header class="guide-header">
+    <div class="container">
+      <span class="eyebrow">使用手册 · User Guide</span>
+      <h1><span class="lang-zh">跟着走，把知脉用起来</span><span class="lang-en">Get ZhiMai working, step by step</span></h1>
+      <p class="sub">
+        <span class="lang-zh">不需要懂技术。约 20–30 分钟读完并跟着配好一遍。对应版本 v0.9.1，支持 macOS（Apple Silicon）与 Windows（x64）。</span>
+        <span class="lang-en">No technical background needed. ~20–30 minutes to read and set up. For v0.9.1, on macOS (Apple Silicon) and Windows (x64).</span>
+      </p>
+      <div class="header-row">
+        <div class="lang-toggle" role="group" aria-label="语言 / Language">
+          <button id="btn-zh" class="active" onclick="setLang('zh')">中文</button>
+          <button id="btn-en" onclick="setLang('en')">English</button>
+        </div>
+        <a href="/#download" class="dl-btn">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1 1 0 011 1v7.6l2.3-2.3a1 1 0 111.4 1.4l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L9 11.6V4a1 1 0 011-1z"/><path d="M3 15a1 1 0 011 1v1h12v-1a1 1 0 112 0v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1a1 1 0 011-1z"/></svg>
+          <span class="lang-zh">下载知脉</span><span class="lang-en">Download ZhiMai</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- TOC -->
+      <nav class="toc" aria-label="目录 / Contents">
+        <div class="toc-title"><span class="lang-zh">目录</span><span class="lang-en">Contents</span></div>
+        <ol>
+          <li><a href="#install"><span class="lang-zh">安装</span><span class="lang-en">Installation</span></a></li>
+          <li><a href="#setup"><span class="lang-zh">首次配置</span><span class="lang-en">First-launch setup</span></a></li>
+          <li><a href="#zones"><span class="lang-zh">三大功能区</span><span class="lang-en">The three zones</span></a></li>
+          <li><a href="#daily"><span class="lang-zh">每天怎么用</span><span class="lang-en">Daily loop</span></a></li>
+          <li><a href="#keys"><span class="lang-zh">快捷键</span><span class="lang-en">Shortcuts</span></a></li>
+          <li><a href="#privacy"><span class="lang-zh">数据与隐私</span><span class="lang-en">Data &amp; privacy</span></a></li>
+          <li><a href="#trouble"><span class="lang-zh">故障排查</span><span class="lang-en">Troubleshooting</span></a></li>
+          <li><a href="#feedback"><span class="lang-zh">反馈</span><span class="lang-en">Feedback</span></a></li>
+        </ol>
+      </nav>
+
+      <!-- 1. Install -->
+      <section class="gs" id="install">
+        <h2><span class="num">1</span><span class="lang-zh">安装</span><span class="lang-en">Installation</span></h2>
+
+        <h3>macOS<span class="lang-zh">（Apple 芯片）</span><span class="lang-en"> (Apple Silicon)</span></h3>
+        <div class="lang-zh">
+          <ol class="steps">
+            <li>双击 <code>.dmg</code> 安装包 → 把「知脉 ZhiMai」图标<b>拖进 Applications 文件夹</b>。</li>
+            <li>在 启动台 / Launchpad 里找到「知脉 ZhiMai」，双击启动。</li>
+            <li>若提示「<b>无法验证开发者</b>」：苹果菜单 → 系统设置 → 隐私与安全性 → 滚到底部 → <b>仍要打开</b> → 输一次 Mac 密码。</li>
+            <li>正常使用过程中<b>不会再反复要密码</b>（v0.9.1 已修）。</li>
+          </ol>
+        </div>
+        <div class="lang-en">
+          <ol class="steps">
+            <li>Double-click the <code>.dmg</code> → drag the "知脉 ZhiMai" icon <b>into Applications</b>.</li>
+            <li>Find it in Launchpad and double-click to launch.</li>
+            <li>If "<b>Cannot verify developer</b>": Apple menu → System Settings → Privacy &amp; Security → scroll down → <b>Open Anyway</b> → enter your Mac password once.</li>
+            <li>During normal use it <b>will not keep asking for a password</b> (fixed in v0.9.1).</li>
+          </ol>
+        </div>
+
+        <h3>Windows x64</h3>
+        <div class="lang-zh">
+          <ol class="steps">
+            <li>双击 <code>.exe</code> 安装包。</li>
+            <li>若 SmartScreen 提示「<b>未知发布者</b>」：点「<b>更多信息</b>」→「<b>仍要运行</b>」。没买代码签名，不是病毒，仅首次出现。</li>
+            <li>安装向导一路「下一步」用默认即可；首次启动若缺 WebView2 会自动下载安装。</li>
+          </ol>
+        </div>
+        <div class="lang-en">
+          <ol class="steps">
+            <li>Double-click the <code>.exe</code>.</li>
+            <li>If SmartScreen says "<b>Unknown publisher</b>": click "<b>More info</b>" → "<b>Run anyway</b>". No code signing yet, not a virus, first time only.</li>
+            <li>Installer wizard → "Next" with defaults; if WebView2 is missing on first launch it auto-installs.</li>
+          </ol>
+        </div>
+
+        <div class="note">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.5 2.7a1.7 1.7 0 013 0l6.3 11.3a1.7 1.7 0 01-1.5 2.5H3.7a1.7 1.7 0 01-1.5-2.5L8.5 2.7zM10 7a1 1 0 00-1 1v3a1 1 0 102 0V8a1 1 0 00-1-1zm0 7a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/></svg>
+          <span><span class="lang-zh">应用还没买代码签名证书（独立开发者，证书在路上），所以两端首次打开都要手动放行一次。这是正常的，不是病毒。</span><span class="lang-en">The app isn't code-signed yet (indie developer, certificate on the way), so you approve it once on first open on each OS. This is expected — not a virus.</span></span>
+        </div>
+      </section>
+
+      <!-- 2. Setup -->
+      <section class="gs" id="setup">
+        <h2><span class="num">2</span><span class="lang-zh">首次配置</span><span class="lang-en">First-launch setup</span></h2>
+
+        <h3><span class="lang-zh">① 配一个 AI 模型</span><span class="lang-en">① Configure an AI model</span> <span style="color:var(--accent);font-size:.8rem;font-family:var(--sans)"><span class="lang-zh">必做</span><span class="lang-en">required</span></span></h3>
+        <div class="lang-zh">
+          <ol class="steps">
+            <li>点左下角 ⚙️「<b>设置</b>」。</li>
+            <li>找到「<b>AI 模型提供方</b>」。</li>
+            <li>提供方下拉，四选一：<b>DeepSeek / OpenAI / Claude (Anthropic) / Azure OpenAI</b>。</li>
+            <li>粘贴对应的 <b>API Key</b>，模型保持默认。</li>
+            <li>点「<b>保存并测试</b>」→ 出现成功提示就配好了。</li>
+          </ol>
+        </div>
+        <div class="lang-en">
+          <ol class="steps">
+            <li>Click ⚙️ "<b>Settings</b>" (bottom-left).</li>
+            <li>Find "<b>AI model provider</b>".</li>
+            <li>Provider dropdown, pick one: <b>DeepSeek / OpenAI / Claude (Anthropic) / Azure OpenAI</b>.</li>
+            <li>Paste the matching <b>API key</b>, leave Model on default.</li>
+            <li>Click "<b>Save and verify</b>" → a success message means you're set.</li>
+          </ol>
+        </div>
+        <div class="note plain">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1a9 9 0 100 18 9 9 0 000-18zm1 13a1 1 0 11-2 0V9a1 1 0 112 0v5zm-1-7.5A1.25 1.25 0 1110 4a1.25 1.25 0 010 2.5z"/></svg>
+          <span><span class="lang-zh">入门推荐 DeepSeek（注册 platform.deepseek.com，便宜稳定）。你的 Key <b>存在自己电脑的本地文件里</b>，不上云——这也是为什么 v0.9.1 不再反复弹密码框。</span><span class="lang-en">DeepSeek is the easiest start (register at platform.deepseek.com). Your key is stored <b>in a local file on your own computer</b>, never the cloud — which is why v0.9.1 no longer triggers the password popup.</span></span>
+        </div>
+
+        <h3><span class="lang-zh">② 选界面语言</span><span class="lang-en">② Choose interface language</span></h3>
+        <p><span class="lang-zh">设置 →「<b>界面语言</b>」→ 选 <b>简体中文</b> 或 <b>English</b>。生成的报告也跟着这个语言。也可以从底部状态栏的语言按钮快速切换。</span><span class="lang-en">Settings → "<b>Interface language</b>" → pick <b>简体中文</b> or <b>English</b>. Reports follow this language. You can also toggle it from the language button in the bottom status bar.</span></p>
+
+        <h3><span class="lang-zh">③ （可选）配向量模型，开启智能问答</span><span class="lang-en">③ (Optional) Embedding model for chat</span></h3>
+        <p><span class="lang-zh">智能问答需要向量模型。设置 →「<b>向量模型 (RAG)</b>」→ 选 <b>Jina v3</b>（注册 jina.ai，每月免费 100 万 tokens）→ 粘贴 Key →「<b>保存向量模型 Key</b>」。不配也能用其它功能，只是智能问答不可用。</span><span class="lang-en">Knowledge chat needs an embedding model. Settings → "<b>Embedding model (RAG)</b>" → pick <b>Jina v3</b> (free 100M tokens/mo at jina.ai) → paste key → "<b>Save embedding key</b>". Optional — everything else works without it.</span></p>
+
+        <h3><span class="lang-zh">④ 知识库位置</span><span class="lang-en">④ Knowledge base location</span></h3>
+        <p><span class="lang-zh">默认已自动准备好，<b>一般不用动</b>。想换：设置 →「本地知识库」→「高级：更改位置」→「选择文件夹」→「保存新位置」。别选系统目录或已有重要文件的目录。</span><span class="lang-en">Auto-prepared by default — <b>usually leave it alone</b>. To change: Settings → "Local knowledge base" → "Advanced: change location" → "Pick folder" → "Save new location". Don't pick system folders or folders with important files.</span></p>
+      </section>
+
+      <!-- 3. Zones -->
+      <section class="gs" id="zones">
+        <h2><span class="num">3</span><span class="lang-zh">三大功能区</span><span class="lang-en">The three zones</span></h2>
+        <p><span class="lang-zh">主导航分三块：<b>采集 → 探索 → 研究报告</b>。一句话：采集喂料、探索消化、研究报告产出。</span><span class="lang-en">Three zones: <b>Capture → Explore → Reports</b>. In one line: Capture feeds it, Explore digests, Reports produces.</span></p>
+
+        <h3><span class="lang-zh">采集 — 把信息丢进去</span><span class="lang-en">Capture — feed it information</span></h3>
+        <p><span class="lang-zh">两个标签：「收件箱」看所有采进来的内容，「数据源」配置从哪采。支持 5 种来源：</span><span class="lang-en">Two tabs: "Inbox" shows everything captured, "Sources" configures where to capture from. Five source types:</span></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th><span class="lang-zh">来源</span><span class="lang-en">Source</span></th><th><span class="lang-zh">怎么用</span><span class="lang-en">How</span></th></tr></thead>
+            <tbody>
+              <tr><td><b><span class="lang-zh">网页采集</span><span class="lang-en">Web page</span></b></td><td><span class="lang-zh">粘贴文章链接 → 采集网页</span><span class="lang-en">Paste an article URL → Capture page</span></td></tr>
+              <tr><td><b>YouTube</b></td><td><span class="lang-zh">粘贴视频链接，自动抓字幕，免 API Key</span><span class="lang-en">Paste a video URL, auto-grabs transcript, no key</span></td></tr>
+              <tr><td><b>Telegram</b></td><td><span class="lang-zh">填 Bot Token，之后转发消息给 bot 自动入库</span><span class="lang-en">Paste a Bot Token, then forward messages to the bot</span></td></tr>
+              <tr><td><b>RSS</b></td><td><span class="lang-zh">填 Feed 链接，自动定期抓</span><span class="lang-en">Paste a feed URL, auto-polled</span></td></tr>
+              <tr><td><b>PDF</b></td><td><span class="lang-zh">直接把文件拖进窗口 / 选择文件</span><span class="lang-en">Drag a file in / pick file</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><span class="lang-zh">采进来后<b>你什么都不用做</b>：AI 自动读完、写摘要、打标签、抽取人/公司/概念、建索引。卡片状态从「待处理」变「已处理」。用「同步信息源」拉新内容、「处理选中」批量跑。</span><span class="lang-en">After capture <b>you do nothing</b>: AI reads it, summarizes, tags, extracts people/companies/concepts, indexes it. Cards go from "Pending" to "Processed". Use "Sync sources" to pull new items and "Process selected" to batch-run.</span></p>
+        <div class="note plain">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1a9 9 0 100 18 9 9 0 000-18zm1 13a1 1 0 11-2 0V9a1 1 0 112 0v5zm-1-7.5A1.25 1.25 0 1110 4a1.25 1.25 0 010 2.5z"/></svg>
+          <span><span class="lang-zh">Telegram 在中国大陆默认连不上，需要梯子。这是网络限制，不是知脉的 bug。</span><span class="lang-en">Telegram is blocked by default in mainland China — needs a VPN. A network limit, not a ZhiMai bug.</span></span>
+        </div>
+
+        <h3><span class="lang-zh">探索 — 消化成知识</span><span class="lang-en">Explore — digest into knowledge</span></h3>
+        <ul>
+          <li><b><span class="lang-zh">智能问答</span><span class="lang-en">Knowledge chat</span></b>（<span class="lang-zh">需先配向量模型</span><span class="lang-en">needs embedding</span>）— <span class="lang-zh">直接问问题，它从整个知识库语义检索 + 大模型综合回答 + 附来源。</span><span class="lang-en">Ask in plain language; semantic retrieval over your whole base + LLM synthesis + citations.</span></li>
+          <li><b>Wiki</b> — <span class="lang-zh">AI 根据你采集的内容自动生成并维护的结构化词条，每个观点标了出处，点一下跳回原文。别手动改，下次会被覆盖。</span><span class="lang-en">Structured entries auto-written and maintained by the AI. Every point cites its source — click to jump back. Don't hand-edit; they get overwritten.</span></li>
+          <li><b><span class="lang-zh">实体库</span><span class="lang-en">Entities</span></b> — <span class="lang-zh">所有抽取出的实体（人、公司、概念）+ 提及次数 + 相关采集。</span><span class="lang-en">All extracted entities with mention counts and references.</span></li>
+          <li><b><span class="lang-zh">深度研究</span><span class="lang-en">Deep Research</span></b>（<span class="lang-zh">v0.9.1 核心</span><span class="lang-en">the centerpiece</span>）— <span class="lang-zh">输入一个主题 → 点「开始研究」。它拆子问题 → 检索你的知识库 → 综合成一篇带来源引用的研究报告。约 30–60 秒，别关页面。</span><span class="lang-en">Enter a topic → "Start Research". It breaks down sub-questions → searches your base → synthesizes a cited report. ~30–60s, keep the page open.</span></li>
+          <li><b><span class="lang-zh">知识图谱</span><span class="lang-en">Knowledge graph</span></b>（<kbd>⌘\</kbd>）— <span class="lang-zh">实体关系网，右侧洞察面板告诉你哪些是连接不同领域的「桥梁」、哪些是反复提到却没深入的盲点。</span><span class="lang-en">Entity network; the insight panel surfaces "bridge" concepts and blind spots.</span></li>
+        </ul>
+
+        <h3><span class="lang-zh">研究报告 — 正式交付物</span><span class="lang-en">Reports — formal deliverables</span></h3>
+        <p><span class="lang-zh">要更正式、可视化的交付物时用这块。三步：</span><span class="lang-en">Use this for formal, visual deliverables. Three steps:</span></p>
+        <div class="lang-zh">
+          <ol class="steps">
+            <li><b>准备素材</b> — 同步来源、处理待办，确保材料可用。</li>
+            <li><b>选择材料</b> — 勾选这次报告要用的采集内容。</li>
+            <li><b>生成报告</b> — 选一个模板，点生成。</li>
+          </ol>
+        </div>
+        <div class="lang-en">
+          <ol class="steps">
+            <li><b>Prepare material</b> — sync sources, clear the pending queue.</li>
+            <li><b>Select captures</b> — tick what this report should draw on.</li>
+            <li><b>Generate</b> — pick a template and generate.</li>
+          </ol>
+        </div>
+        <p><span class="lang-zh">四个模板：<b>行业研究 / 公司研究 / 竞品分析 / 周报总结</b>。「生成研究报告」出 Markdown 文字版；「视觉研报」出一张能一眼看完、可直接截图发同事的可视化报告。界面是中文就出中文，英文就出英文。</span><span class="lang-en">Four templates: <b>Industry Research / Company Research / Competitive Analysis / Weekly Digest</b>. "Generate report" gives a Markdown version; "Visual report" gives a one-glance visual you can screenshot into a deck. Output language follows your interface language.</span></p>
+      </section>
+
+      <!-- 4. Daily -->
+      <section class="gs" id="daily">
+        <h2><span class="num">4</span><span class="lang-zh">每天怎么用</span><span class="lang-en">Daily loop</span></h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th><span class="lang-zh">什么时候</span><span class="lang-en">When</span></th><th><span class="lang-zh">做什么</span><span class="lang-en">What</span></th></tr></thead>
+            <tbody>
+              <tr><td><span class="lang-zh">看到好资料</span><span class="lang-en">See good material</span></td><td><span class="lang-zh">采集区粘链接 / 拖 PDF / 转发给 Telegram bot</span><span class="lang-en">Paste a link / drop a PDF / forward to the Telegram bot</span></td></tr>
+              <tr><td><span class="lang-zh">每天 1 次</span><span class="lang-en">Once a day</span></td><td><span class="lang-zh">收件箱 →「同步信息源」+「处理选中」</span><span class="lang-en">Inbox → "Sync sources" + "Process selected"</span></td></tr>
+              <tr><td><span class="lang-zh">想查东西</span><span class="lang-en">To look something up</span></td><td><span class="lang-zh">探索区：智能问答 / Wiki / 图谱</span><span class="lang-en">Explore: chat / Wiki / graph</span></td></tr>
+              <tr><td><span class="lang-zh">要做研究</span><span class="lang-en">To research a topic</span></td><td><span class="lang-zh">探索 → 深度研究</span><span class="lang-en">Explore → Deep Research</span></td></tr>
+              <tr><td><span class="lang-zh">给别人看</span><span class="lang-en">To share</span></td><td><span class="lang-zh">研究报告（视觉研报截图）</span><span class="lang-en">Reports (visual report screenshot)</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. Shortcuts -->
+      <section class="gs" id="keys">
+        <h2><span class="num">5</span><span class="lang-zh">快捷键</span><span class="lang-en">Shortcuts</span></h2>
+        <p><span class="lang-zh">Mac 用 <kbd>⌘</kbd>，Windows/Linux 用 <kbd>Ctrl</kbd>。</span><span class="lang-en">Mac uses <kbd>⌘</kbd>, Windows/Linux uses <kbd>Ctrl</kbd>.</span></p>
+        <div class="tbl-wrap">
+          <table>
+            <tbody>
+              <tr><td><kbd>⌘K</kbd></td><td><span class="lang-zh">搜索</span><span class="lang-en">Search</span></td></tr>
+              <tr><td><kbd>⌘1</kbd> / <kbd>⌘2</kbd> / <kbd>⌘3</kbd></td><td><span class="lang-zh">切到 采集 / 探索 / 研究报告</span><span class="lang-en">Go to Capture / Explore / Reports</span></td></tr>
+              <tr><td><kbd>⌘N</kbd></td><td><span class="lang-zh">新建采集</span><span class="lang-en">New capture</span></td></tr>
+              <tr><td><kbd>⌘\</kbd></td><td><span class="lang-zh">开关知识图谱面板</span><span class="lang-en">Toggle graph panel</span></td></tr>
+              <tr><td><kbd>⌘,</kbd></td><td><span class="lang-zh">打开设置</span><span class="lang-en">Open Settings</span></td></tr>
+              <tr><td><kbd>⌘D</kbd></td><td><span class="lang-zh">深色 / 浅色切换</span><span class="lang-en">Toggle dark mode</span></td></tr>
+              <tr><td><kbd>⌘/</kbd></td><td><span class="lang-zh">快捷键帮助</span><span class="lang-en">Shortcuts help</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. Privacy -->
+      <section class="gs" id="privacy">
+        <h2><span class="num">6</span><span class="lang-zh">数据与隐私</span><span class="lang-en">Data &amp; privacy</span></h2>
+        <ul>
+          <li><b><span class="lang-zh">资料不上传</span><span class="lang-en">Material never uploaded</span></b> — <span class="lang-zh">采集的原文、整理的知识、生成的报告，全部存在你自己电脑上。</span><span class="lang-en">your captured text, organized knowledge, and reports all live on your own computer.</span></li>
+          <li><b><span class="lang-zh">密钥本地保存</span><span class="lang-en">Keys stored locally</span></b> — <span class="lang-zh">API Key 存在你电脑的本地文件里，不上云——所以不再反复弹密码框。</span><span class="lang-en">API keys sit in a local file on your machine, never the cloud — which is why the password popup is gone.</span></li>
+          <li><b><span class="lang-zh">只有 AI 调用会出网</span><span class="lang-en">Only LLM calls leave the device</span></b> — <span class="lang-zh">跑 AI 时会把相关内容发给你选的模型厂商（DeepSeek/OpenAI/Claude/Azure），受各家隐私政策保护。</span><span class="lang-en">running AI sends relevant content to your chosen provider, under their privacy policies.</span></li>
+          <li><b><span class="lang-zh">备份</span><span class="lang-en">Backup</span></b> — <span class="lang-zh">把知识库文件夹加进 iCloud / OneDrive / Time Machine 即可。</span><span class="lang-en">add the knowledge base folder to iCloud / OneDrive / Time Machine.</span></li>
+          <li><b><span class="lang-zh">数据带得走</span><span class="lang-en">Your data is portable</span></b> — <span class="lang-zh">知识库就是一个普通文件夹，全是标准 Markdown，卸载知脉后用任何编辑器都能继续打开。</span><span class="lang-en">the knowledge base is a plain folder of standard Markdown — open it in any editor even after uninstalling.</span></li>
+        </ul>
+      </section>
+
+      <!-- 7. Troubleshooting -->
+      <section class="gs" id="trouble">
+        <h2><span class="num">7</span><span class="lang-zh">故障排查</span><span class="lang-en">Troubleshooting</span></h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th><span class="lang-zh">现象</span><span class="lang-en">Symptom</span></th><th><span class="lang-zh">怎么办</span><span class="lang-en">Action</span></th></tr></thead>
+            <tbody>
+              <tr><td><span class="lang-zh">Wiki / 问答是空的</span><span class="lang-en">Wiki / chat is empty</span></td><td><span class="lang-zh">还没处理过内容 → 采集区「处理选中」先跑一遍</span><span class="lang-en">Nothing processed yet → run "Process selected" first</span></td></tr>
+              <tr><td><span class="lang-zh">智能问答用不了</span><span class="lang-en">Chat unavailable</span></td><td><span class="lang-zh">没配向量模型 → 设置里配 Jina v3</span><span class="lang-en">No embedding → configure Jina v3 in Settings</span></td></tr>
+              <tr><td><span class="lang-zh">AI 报错</span><span class="lang-en">LLM error</span></td><td><span class="lang-zh">Key 失效 / 余额不足 / 网络 → 设置里重粘 Key，看报错</span><span class="lang-en">Bad key / no balance / network → re-paste key in Settings</span></td></tr>
+              <tr><td><span class="lang-zh">Mac「无法验证开发者」</span><span class="lang-en">macOS "can't verify"</span></td><td><span class="lang-zh">系统设置 → 隐私与安全性 →「仍要打开」（一次性）</span><span class="lang-en">System Settings → Privacy &amp; Security → "Open Anyway" (once)</span></td></tr>
+              <tr><td><span class="lang-zh">Win「未知发布者」</span><span class="lang-en">Win "unknown publisher"</span></td><td><span class="lang-zh">「更多信息」→「仍要运行」（一次性）</span><span class="lang-en">"More info" → "Run anyway" (once)</span></td></tr>
+              <tr><td><span class="lang-zh">Telegram 连不上</span><span class="lang-en">Telegram unreachable</span></td><td><span class="lang-zh">大陆需梯子访问 api.telegram.org</span><span class="lang-en">Mainland China needs a VPN for api.telegram.org</span></td></tr>
+              <tr><td><span class="lang-zh">深度研究一直转圈</span><span class="lang-en">Deep Research spinning</span></td><td><span class="lang-zh">正常约 30–60 秒，别关页面</span><span class="lang-en">Normal ~30–60s, keep the page open</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 8. Feedback -->
+      <section class="gs" id="feedback">
+        <h2><span class="num">8</span><span class="lang-zh">反馈</span><span class="lang-en">Feedback</span></h2>
+        <p><span class="lang-zh">用着哪里别扭、想加什么功能、或者打不开/出错 —— 直接 <a href="mailto:cyrusttyj2@gmail.com">发邮件给 Cyrus</a>，附上：你的系统（Mac/Win）+ 错误截图 + 你点了哪几步。也可以去 <a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub</a> 提 issue。</span><span class="lang-en">Anything awkward, any feature wish, or won't-launch/error — <a href="mailto:cyrusttyj2@gmail.com">email Cyrus</a> with: your OS (Mac/Win) + a screenshot + the steps you took. Or open an issue on <a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub</a>.</span></p>
+        <p style="margin-top:var(--s-5)"><a href="/#download" class="dl-btn"><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1 1 0 011 1v7.6l2.3-2.3a1 1 0 111.4 1.4l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L9 11.6V4a1 1 0 011-1z"/><path d="M3 15a1 1 0 011 1v1h12v-1a1 1 0 112 0v1a2 2 0 01-2 2H4a2 2 0 01-2-2v-1a1 1 0 011-1z"/></svg><span class="lang-zh">下载知脉 ZhiMai</span><span class="lang-en">Download ZhiMai</span></a></p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">知脉 <span class="en">ZhiMai</span></div>
+        <div class="footer-meta">使用手册 · v0.9.1 · 由 Cyrus 独立开发 · Tauri + React + Rust</div>
+      </div>
+      <div class="footer-links">
+        <a href="/">← <span class="lang-zh">返回首页</span><span class="lang-en">Home</span></a>
+        <a href="https://cyrustyj.xyz" target="_blank" rel="noopener">cyrustyj.xyz</a>
+        <a href="https://github.com/cyrus-tt/grace-knowledge-system" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:cyrusttyj2@gmail.com"><span class="lang-zh">邮件</span><span class="lang-en">Email</span></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function setLang(l) {
+      var b = document.body;
+      b.classList.toggle('show-zh', l === 'zh');
+      b.classList.toggle('show-en', l === 'en');
+      document.getElementById('btn-zh').classList.toggle('active', l === 'zh');
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      document.documentElement.lang = (l === 'en') ? 'en' : 'zh-CN';
+      try { localStorage.setItem('zhimai-guide-lang', l); } catch (e) {}
+    }
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('zhimai-guide-lang'); } catch (e) {}
+      if (!saved) saved = (navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : ((navigator.language || '').toLowerCase().indexOf('en') === 0 ? 'en' : 'zh');
+      setLang(saved);
+    })();
+  </script>
+</body>
+</html>
